@@ -414,7 +414,7 @@
       </div>
       <div class="intro-right reveal" style="--rd: 0.12s">
         <div class="portrait">
-          <image-slot id="aboutPortrait" shape="rounded" radius="8" src="uploads/portrait.png" fit="cover" position="50% 30%" placeholder="Drop a portrait"></image-slot>
+          <image-slot id="aboutPortrait" shape="rounded" radius="8" src="uploads/portrait.webp" fit="cover" position="50% 30%" placeholder="Drop a portrait"></image-slot>
         </div>
         <div class="portrait-cap">That's me</div>
       </div>
@@ -483,16 +483,16 @@
       });
     }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
     els.forEach(function (el) { io.observe(el); });
-    setTimeout(function () { els.forEach(function (el) { el.classList.add("in"); }); }, 2600);
+    setTimeout(function () { els.forEach(function (el) { el.classList.add("in"); }); }, 0);
   })();
 
   // dissolve slideshow — 3 images per frame, continuous crossfade
   (function () {
     // Fill each array with 3 image paths from uploads/. Order = display order.
     const GALLERY = {
-      road:     ["uploads/A.png", "uploads/B.png", "uploads/C.png"],   // On the road
-      lens:     ["uploads/P1.png", "uploads/P2.png", "uploads/P3.png", "uploads/P4.png"],   // Through the lens
-      sketch:   ["uploads/S1.png", "uploads/S2.png", "uploads/S3.png", "uploads/S4.png"],   // Sketching days
+      road:     ["uploads/A.webp", "uploads/B.webp", "uploads/C.webp"],   // On the road
+      lens:     ["uploads/P1.webp", "uploads/P2.webp", "uploads/P3.webp", "uploads/P4.webp"],   // Through the lens
+      sketch:   ["uploads/S1.webp", "uploads/S2.webp", "uploads/S3.webp", "uploads/S4.webp"],   // Sketching days
       trails:   [],   // Trails & travels
       graffiti: [],   // Graffiti
       friends:  [],   // Friends & frames
