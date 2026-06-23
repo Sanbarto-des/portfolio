@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hero Lighting — Explorations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --fg: #f0ede8;
+    --gold: #c8b89a;
+    --muted: #8a857c;
+    --line: rgba(240, 237, 232, 0.12);
+    --serif: "Cormorant Garamond", Georgia, serif;
+    --mono: "DM Mono", ui-monospace, monospace;
+    --gutter: clamp(20px, 5vw, 80px);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .ital { font-style: italic; color: var(--gold); }
+
+  /* ===== HERO SHELL ===== */
+  .hero {
+    /* FX parameters (driven by the Tweaks panel) */
+    --fx-accent: 200 184 154;   /* rgb channels */
+    --fx-intensity: 1;
+    --fx-radius: 420px;
+
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--gutter);
+    padding-bottom: clamp(48px, 9vh, 110px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .fx { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .hero-content { position: relative; z-index: 2; }
+  .hero-label { margin-bottom: clamp(28px, 6vh, 60px); }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(52px, 11vw, 168px);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    max-width: 14ch;
+  }
+  .hero-bio {
+    margin-top: clamp(26px, 4vh, 44px);
+    max-width: 46ch;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  /* ===== FX 1 — CURSOR SPOTLIGHT ===== */
+  .fx-spotlight {
+    background:
+      radial-gradient(var(--fx-radius) circle at var(--mx, 50%) var(--my, 50%),
+        rgb(var(--fx-accent) / calc(0.16 * var(--fx-intensity))),
+        rgb(var(--fx-accent) / calc(0.05 * var(--fx-intensity))) 40%,
+        transparent 68%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .hero[data-fx="spotlight"] .fx-spotlight { opacity: 1; }
+  /* fusion: a soft glow ties the grid + text together as one light source */
+  .hero[data-fx="fusion"] .fx-spotlight { opacity: calc(0.55 * var(--fx-intensity)); }
+
+  /* ===== FX 2 — INTERACTIVE DOT GRID ===== */
+  .fx-grid {
+    background-image: radial-gradient(circle, rgba(240,237,232,0.5) 1px, transparent 1.4px);
+    background-size: 38px 38px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    -webkit-mask-image: radial-gradient(var(--fx-radius) circle at var(--mx,50%) var(--my,50%), #000 0%, rgba(0,0,0,0.35) 45%, transparent 72%);
+    mask-image: radial-gradient(var(--fx-radius) circle at var(--mx,50%) var(--my,50%), #000 0%, rgba(0,0,0,0.35) 45%, transparent 72%);
+  }
+  .fx-grid-gold {
+    background-image: radial-gradient(circle, rgb(var(--fx-accent)) 1.2px, transparent 1.6px);
+    background-size: 38px 38px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    -webkit-mask-image: radial-gradient(calc(var(--fx-radius) * 0.55) circle at var(--mx,50%) var(--my,50%), #000 0%, transparent 70%);
+    mask-image: radial-gradient(calc(var(--fx-radius) * 0.55) circle at var(--mx,50%) var(--my,50%), #000 0%, transparent 70%);
+  }
+  .hero[data-fx="grid"] .fx-grid,
+  .hero[data-fx="fusion"] .fx-grid { opacity: calc(0.6 * var(--fx-intensity)); }
+  .hero[data-fx="grid"] .fx-grid-gold,
+  .hero[data-fx="fusion"] .fx-grid-gold { opacity: var(--fx-intensity); }
+
+  /* ===== FX 3 — AURORA MESH ===== */
+  .fx-aurora { opacity: 0; transition: opacity 0.8s ease; filter: blur(60px) saturate(120%); }
+  .hero[data-fx="aurora"] .fx-aurora { opacity: var(--fx-intensity); }
+  .blob { position: absolute; border-radius: 50%; mix-blend-mode: screen; }
+  .blob.b1 {
+    width: 50vw; height: 50vw; left: -8vw; top: 8vw;
+    background: radial-gradient(circle, rgb(var(--fx-accent) / 0.5), transparent 65%);
+    transform: translate(var(--ax1, 0), var(--ay1, 0));
+    transition: transform 1.6s cubic-bezier(0.22,1,0.36,1);
+    animation: drift1 18s ease-in-out infinite;
+  }
+  .blob.b2 {
+    width: 40vw; height: 40vw; right: -6vw; top: 0;
+    background: radial-gradient(circle, rgba(150,140,180,0.32), transparent 65%);
+    transform: translate(var(--ax2, 0), var(--ay2, 0));
+    transition: transform 2s cubic-bezier(0.22,1,0.36,1);
+    animation: drift2 22s ease-in-out infinite;
+  }
+  .blob.b3 {
+    width: 46vw; height: 46vw; left: 28vw; bottom: -14vw;
+    background: radial-gradient(circle, rgb(var(--fx-accent) / 0.28), transparent 65%);
+    transform: translate(var(--ax3, 0), var(--ay3, 0));
+    transition: transform 2.4s cubic-bezier(0.22,1,0.36,1);
+    animation: drift3 26s ease-in-out infinite;
+  }
+  @keyframes drift1 { 0%,100%{margin:0 0} 50%{margin:-4vw 3vw} }
+  @keyframes drift2 { 0%,100%{margin:0 0} 50%{margin:5vw -3vw} }
+  @keyframes drift3 { 0%,100%{margin:0 0} 50%{margin:-3vw -4vw} }
+
+  /* ===== FX 4 — TEXT LIGHT-REVEAL ===== */
+  .reveal-h1 { position: relative; display: inline-block; }
+  .reveal-h1 .base { color: rgba(240,237,232,0.18); transition: color 0.6s ease; }
+  .reveal-h1 .lit {
+    position: absolute; inset: 0;
+    color: rgb(var(--fx-accent));
+    -webkit-mask-image: radial-gradient(calc(var(--fx-radius) * 0.62) circle at var(--mx,50%) var(--my,50%), #000 0%, rgba(0,0,0,0.4) 40%, transparent 66%);
+    mask-image: radial-gradient(calc(var(--fx-radius) * 0.62) circle at var(--mx,50%) var(--my,50%), #000 0%, rgba(0,0,0,0.4) 40%, transparent 66%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    text-shadow: 0 0 30px rgb(var(--fx-accent) / calc(0.35 * var(--fx-intensity)));
+    pointer-events: none;
+  }
+  .reveal-h1 .lit .ital { color: #f3e9d2; }
+  .hero[data-fx="reveal"] .reveal-h1 .base,
+  .hero[data-fx="fusion"] .reveal-h1 .base { color: rgba(240,237,232,0.16); }
+  .hero[data-fx="reveal"] .reveal-h1 .lit,
+  .hero[data-fx="fusion"] .reveal-h1 .lit { opacity: 1; }
+  .hero:not([data-fx="reveal"]):not([data-fx="fusion"]) .reveal-h1 .base { color: var(--fg); }
+  .hero:not([data-fx="reveal"]):not([data-fx="fusion"]) .reveal-h1 .base .ital { color: var(--gold); font-style: italic; }
+  .hero:not([data-fx="reveal"]):not([data-fx="fusion"]) .reveal-h1 .lit { opacity: 0; }
+  /* fusion: dim the accent word in the base too, so the cursor light reveals the whole line */
+  .hero[data-fx="fusion"] .reveal-h1 .base .ital { color: rgba(240,237,232,0.16); }
+  .reveal-h1 .base .ital { font-style: italic; }
+
+  /* ===== FLOATING 3D SCENE (right side) ===== */
+  .scene {
+    --obj-speed: 1;
+    position: absolute;
+    top: 0; bottom: 0;
+    right: clamp(-20px, 2vw, 70px);
+    width: min(54%, 760px);
+    z-index: 1;
+    pointer-events: none;
+    perspective: 1400px;
+    perspective-origin: 60% 45%;
+  }
+  .scene-inner {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--scRX, 0deg)) rotateY(var(--scRY, 0deg));
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 1;
+  }
+
+  /* float wrappers carry zero-G drift; inner shapes carry their own spin */
+  .obj { position: absolute; transform-style: preserve-3d; will-change: transform; }
+  .obj-a { top: 16%; right: 18%; animation: floatA calc(13s / var(--obj-speed)) ease-in-out infinite; }
+  .obj-b { top: 44%; right: 30%; animation: floatB calc(17s / var(--obj-speed)) ease-in-out infinite; }
+  .obj-c { top: 60%; right: 12%; animation: floatC calc(15s / var(--obj-speed)) ease-in-out infinite; }
+  .obj-d { top: 30%; right: 4%;  animation: floatB calc(19s / var(--obj-speed)) ease-in-out infinite; }
+  .obj-e { top: 72%; right: 24%; animation: floatA calc(21s / var(--obj-speed)) ease-in-out infinite; }
+
+  @keyframes floatA { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(-14px,-30px,50px); } }
+  @keyframes floatB { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(18px,-22px,-30px); } }
+  @keyframes floatC { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(-10px,26px,20px); } }
+
+  /* — Glass cube — */
+  .cube {
+    --s: clamp(80px, 9vw, 132px);
+    width: var(--s); height: var(--s);
+    transform-style: preserve-3d;
+    animation: spinCube calc(34s / var(--obj-speed)) linear infinite;
+  }
+  .cube .face {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(240,237,232,0.07), rgba(240,237,232,0.015));
+    border: 1px solid rgb(var(--fx-accent, 200 184 154) / 0.4);
+    box-shadow: inset 0 0 34px rgb(var(--fx-accent, 200 184 154) / 0.08);
+  }
+  .cube .f-front  { transform: translateZ(calc(var(--s) / 2)); }
+  .cube .f-back   { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+  .cube .f-right  { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); background: linear-gradient(135deg, rgb(var(--fx-accent,200 184 154)/0.14), rgba(240,237,232,0.02)); }
+  .cube .f-left   { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+  .cube .f-top    { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); background: linear-gradient(135deg, rgba(240,237,232,0.12), rgba(240,237,232,0.03)); }
+  .cube .f-bottom { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); background: rgba(10,10,10,0.5); }
+
+  /* — Lit sphere — */
+  .sphere {
+    --s: clamp(70px, 8vw, 116px);
+    width: var(--s); height: var(--s); border-radius: 50%;
+    background: radial-gradient(circle at 34% 28%,
+      rgba(255,252,246,0.95), rgb(var(--fx-accent,200 184 154) / 0.7) 24%,
+      rgba(46,43,38,0.95) 64%, #0b0b0b 100%);
+    box-shadow: 0 40px 70px rgba(0,0,0,0.6),
+      inset -10px -14px 36px rgba(0,0,0,0.65),
+      0 0 60px rgb(var(--fx-accent,200 184 154) / 0.12);
+    position: relative;
+  }
+  .sphere::after {
+    content: ""; position: absolute; top: 18%; left: 24%;
+    width: 22%; height: 22%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.9), transparent 70%);
+    filter: blur(3px);
+  }
+
+  /* — Tilted gold ring — */
+  .ring-wrap { transform: rotateX(70deg) rotateZ(8deg); transform-style: preserve-3d; }
+  .ring {
+    --s: clamp(120px, 13vw, 200px);
+    width: var(--s); height: var(--s); border-radius: 50%;
+    border: clamp(5px, 0.7vw, 9px) solid rgb(var(--fx-accent,200 184 154) / 0.5);
+    box-shadow: 0 0 34px rgb(var(--fx-accent,200 184 154) / 0.25),
+      inset 0 0 24px rgb(var(--fx-accent,200 184 154) / 0.18);
+    animation: spinRing calc(28s / var(--obj-speed)) linear infinite;
+  }
+
+  /* — Frosted glass panels — */
+  .panel {
+    width: clamp(120px, 15vw, 220px); height: clamp(150px, 19vw, 270px);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(240,237,232,0.09), rgba(240,237,232,0.02));
+    border: 1px solid rgba(240,237,232,0.14);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.18);
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  }
+  .panel.p1 { transform: rotateY(-28deg) rotateX(8deg); }
+  .panel.p2 { transform: rotateY(24deg) rotateX(-6deg); width: clamp(90px,11vw,150px); height: clamp(110px,13vw,180px); }
+
+  /* — Depth sparks — */
+  .spark {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgb(var(--fx-accent,200 184 154));
+    box-shadow: 0 0 14px rgb(var(--fx-accent,200 184 154) / 0.9);
+  }
+
+  @keyframes spinCube { to { transform: rotateX(360deg) rotateY(360deg); } }
+  @keyframes spinRing { to { transform: rotateZ(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene-inner, .obj, .cube, .ring { animation: none !important; opacity: 1 !important; }
+  }
+  @media (max-width: 860px) { .scene { display: none; } }
+
+  .scroll-tag {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(48px, 9vh, 110px);
+    writing-mode: vertical-rl;
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--muted); z-index: 2;
+  }
+
+  /* Discoverability nudge (hidden once Tweaks is opened) */
+  .fx-hint {
+    position: fixed;
+    left: 50%; bottom: 22px; transform: translateX(-50%);
+    z-index: 40;
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted);
+    background: rgba(19,19,18,0.55);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    padding: 9px 18px;
+    display: flex; align-items: center; gap: 9px;
+    transition: opacity 0.4s ease;
+  }
+  .fx-hint .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+  @media (max-width: 700px) {
+    .scroll-tag { display: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="hero" id="hero" data-fx="fusion" data-screen-label="Hero">
+    <!-- FX layers -->
+    <div class="fx fx-spotlight"></div>
+    <div class="fx fx-grid"></div>
+    <div class="fx fx-grid-gold"></div>
+    <div class="fx fx-aurora">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+    </div>
+
+    <!-- Floating 3D scene -->
+    <div class="scene" id="scene">
+      <div class="scene-inner">
+        <div class="obj obj-a"><div class="cube">
+          <div class="face f-front"></div><div class="face f-back"></div>
+          <div class="face f-right"></div><div class="face f-left"></div>
+          <div class="face f-top"></div><div class="face f-bottom"></div>
+        </div></div>
+        <div class="obj obj-b"><div class="sphere"></div></div>
+        <div class="obj obj-c"><div class="ring-wrap"><div class="ring"></div></div></div>
+        <div class="obj obj-d"><div class="panel p1"></div></div>
+        <div class="obj obj-e"><div class="panel p2"></div></div>
+        <div class="obj obj-a" style="top:38%;right:30%"><div class="spark"></div></div>
+        <div class="obj obj-c" style="top:24%;right:50%"><div class="spark" style="width:4px;height:4px"></div></div>
+        <div class="obj obj-b" style="top:80%;right:22%"><div class="spark" style="width:5px;height:5px"></div></div>
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-label"><span class="label">Designer — Graphic · Illustration · UX</span></div>
+      <h1>
+        <span class="reveal-h1">
+          <span class="base">Bringing thoughts <span class="ital">to life</span></span>
+          <span class="lit" aria-hidden="true">Bringing thoughts <span class="ital">to life</span></span>
+        </span>
+      </h1>
+      <p class="hero-bio">A multidisciplinary designer working across graphic design, illustration, and digital products — shaping ideas into considered, expressive visual systems.</p>
+    </div>
+    <div class="scroll-tag">Scroll</div>
+  </section>
+
+  <div class="fx-hint" id="fxHint"><span class="dot"></span> Open Tweaks to change the hero lighting</div>
+
+  <div id="tweaks-root"></div>
+
+  <!-- Pointer → CSS vars (independent of React) -->
+  <script>
+    (function () {
+      const hero = document.getElementById("hero");
+      const sceneInner = document.querySelector(".scene-inner");
+      window.addEventListener("pointermove", function (e) {
+        const r = hero.getBoundingClientRect();
+        const px = ((e.clientX - r.left) / r.width) * 100;
+        const py = ((e.clientY - r.top) / r.height) * 100;
+        hero.style.setProperty("--mx", px + "%");
+        hero.style.setProperty("--my", py + "%");
+        const dx = (e.clientX - r.left - r.width / 2);
+        const dy = (e.clientY - r.top - r.height / 2);
+        hero.style.setProperty("--ax1", (dx * 0.04) + "px");
+        hero.style.setProperty("--ay1", (dy * 0.04) + "px");
+        hero.style.setProperty("--ax2", (dx * -0.06) + "px");
+        hero.style.setProperty("--ay2", (dy * -0.05) + "px");
+        hero.style.setProperty("--ax3", (dx * 0.07) + "px");
+        hero.style.setProperty("--ay3", (dy * 0.06) + "px");
+        // gentle scene parallax — tilt the whole cluster toward the cursor
+        if (sceneInner) {
+          const nx = (e.clientX - r.left) / r.width - 0.5;
+          const ny = (e.clientY - r.top) / r.height - 0.5;
+          sceneInner.style.setProperty("--scRY", (nx * 12).toFixed(2) + "deg");
+          sceneInner.style.setProperty("--scRX", (-ny * 10).toFixed(2) + "deg");
+        }
+      });
+    })();
+  </script>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "effect": "fusion",
+      "accent": "#c8b89a",
+      "intensity": 45,
+      "radius": 400,
+      "show3d": true,
+      "objSpeed": 120
+    }/*EDITMODE-END*/;
+
+    const EFFECTS = [
+      { value: "spotlight", label: "Cursor Spotlight" },
+      { value: "grid",      label: "Igniting Dot Grid" },
+      { value: "aurora",    label: "Aurora Mesh" },
+      { value: "reveal",    label: "Text Light-Reveal" },
+      { value: "fusion",    label: "Reveal + Dot Grid" },
+    ];
+
+    const ACCENTS = ["#c8b89a", "#b8a7c8", "#9ab8b0", "#c89a9a"];
+
+    function hexToRgbChannels(hex) {
+      const h = String(hex).replace("#", "");
+      const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h;
+      const n = parseInt(x, 16);
+      return ((n >> 16) & 255) + " " + ((n >> 8) & 255) + " " + (n & 255);
+    }
+
+    function HeroLightingTweaks() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+      React.useEffect(() => {
+        const hero = document.getElementById("hero");
+        if (!hero) return;
+        hero.setAttribute("data-fx", t.effect);
+        hero.style.setProperty("--fx-accent", hexToRgbChannels(t.accent));
+        hero.style.setProperty("--fx-intensity", (t.intensity / 100).toString());
+        hero.style.setProperty("--fx-radius", t.radius + "px");
+        const scene = document.getElementById("scene");
+        if (scene) {
+          scene.style.display = t.show3d ? "" : "none";
+          scene.style.setProperty("--obj-speed", (t.objSpeed / 100).toString());
+        }
+      }, [t.effect, t.accent, t.intensity, t.radius, t.show3d, t.objSpeed]);
+
+      return (
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Hero lighting" />
+          <TweakSelect label="Effect" value={t.effect} options={EFFECTS}
+                       onChange={(v) => setTweak("effect", v)} />
+          <TweakSection label="Light" />
+          <TweakColor label="Accent" value={t.accent} options={ACCENTS}
+                      onChange={(v) => setTweak("accent", v)} />
+          <TweakSlider label="Intensity" value={t.intensity} min={20} max={200} step={5} unit="%"
+                       onChange={(v) => setTweak("intensity", v)} />
+          <TweakSlider label="Light radius" value={t.radius} min={180} max={760} step={20} unit="px"
+                       onChange={(v) => setTweak("radius", v)} />
+          <TweakSection label="Floating objects" />
+          <TweakToggle label="Show 3D scene" value={t.show3d}
+                       onChange={(v) => setTweak("show3d", v)} />
+          <TweakSlider label="Drift speed" value={t.objSpeed} min={40} max={200} step={10} unit="%"
+                       onChange={(v) => setTweak("objSpeed", v)} />
+        </TweaksPanel>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("tweaks-root")).render(<HeroLightingTweaks />);
+
+    // Hide the discoverability hint once Tweaks is opened.
+    window.addEventListener("message", function (e) {
+      if (e?.data?.type === "__activate_edit_mode") {
+        const hint = document.getElementById("fxHint");
+        if (hint) hint.style.opacity = "0";
+      }
+    });
+  </script>
+</body>
+</html>

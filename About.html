@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About — Sanbarto Mondal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Mono:wght@300;400;500&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --fg: #f0ede8;
+    --gold: #c8b89a;
+    --muted: #8a857c;
+    --line: rgba(240, 237, 232, 0.12);
+    --surface: #131312;
+    --serif: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+    --mono: "DM Mono", ui-monospace, monospace;
+    --gutter: clamp(28px, 7vw, 140px);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Noise overlay */
+  .noise {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .ital { font-style: italic; color: var(--gold); }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px var(--gutter);
+    transition: background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease, padding 0.4s ease;
+    border-bottom: 1px solid transparent;
+  }
+  nav.scrolled {
+    background: rgba(13, 13, 13, 0.55);
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+    border-bottom: 1px solid var(--line);
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .nav-logo {
+    display: inline-flex;
+    align-items: center;
+    color: var(--fg);
+    transition: color 0.3s ease, opacity 0.3s ease;
+  }
+  .nav-logo svg { display: block; height: 20px; width: auto; }
+  .nav-logo svg path { fill: currentColor; transition: fill 0.3s ease; }
+  .nav-logo:hover { color: var(--gold); }
+  .nav-links {
+    display: flex;
+    gap: clamp(22px, 3vw, 44px);
+    align-items: center;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg);
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 3px;
+  }
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 0; height: 1px;
+    background: var(--gold);
+    transition: width 0.35s ease;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after,
+  .nav-links a.active::after { width: 100%; }
+  .nav-links a.active { color: var(--gold); }
+
+  /* ===== SECTION SHELL ===== */
+  section.block {
+    padding: clamp(90px, 14vh, 180px) var(--gutter);
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: clamp(40px, 7vh, 80px);
+  }
+  .section-label::before {
+    content: "";
+    width: 32px; height: 1px;
+    background: var(--gold);
+  }
+
+  /* ===== INTRO ===== */
+  .intro {
+    padding-top: clamp(150px, 22vh, 260px);
+  }
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(48px, 6vw, 110px);
+    align-items: stretch;
+  }
+  .intro-left { min-width: 0; }
+  .intro-left h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(40px, 6vw, 84px);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    margin-bottom: clamp(28px, 4vh, 44px);
+  }
+  .intro-left p {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(17px, 1.5vw, 22px);
+    line-height: 1.6;
+    color: rgba(240, 237, 232, 0.86);
+    max-width: 56ch;
+    margin-bottom: 22px;
+    text-wrap: pretty;
+  }
+  .intro-left p:last-of-type { margin-bottom: 0; }
+  .intro-left p .ital { font-weight: 400; }
+
+  .intro-meta {
+    margin-top: clamp(34px, 5vh, 52px);
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 36px;
+    border-top: 1px solid var(--line);
+    padding-top: clamp(28px, 4vh, 40px);
+  }
+  .meta-item .meta-k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .meta-item .meta-v {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--fg);
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  /* portrait */
+  .intro-right { min-width: 0; display: flex; flex-direction: column; }
+  .portrait {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .portrait image-slot { width: 100%; height: 100%; display: block; }
+  .portrait-cap {
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .portrait-cap::before { content: ""; width: 18px; height: 1px; background: var(--gold); }
+
+  .pills-label { margin-top: clamp(40px, 6vh, 60px); margin-bottom: 18px; display: inline-flex; align-items: center; gap: 14px; }
+  .pills-label::before { content: ""; width: 32px; height: 1px; background: var(--gold); }
+  .pills { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill {
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    padding: 9px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: rgba(240, 237, 232, 0.82);
+    transition: border-color 0.3s ease, color 0.3s ease;
+  }
+  .pill:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ===== GALLERY ===== */
+  .gallery-intro {
+    max-width: 60ch;
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(17px, 1.5vw, 21px);
+    line-height: 1.6;
+    color: rgba(240, 237, 232, 0.82);
+    margin-top: -28px;
+    margin-bottom: clamp(44px, 6vh, 72px);
+    text-wrap: pretty;
+  }
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: clamp(218px, 27vh, 300px);
+    gap: 16px;
+  }
+  .bcard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .b1 { grid-column: span 5; }
+  .b2 { grid-column: span 4; }
+  .b3 { grid-column: span 3; }
+  .b4 { grid-column: span 4; }
+  .b5 { grid-column: span 3; }
+  .b6 { grid-column: span 5; }
+
+  /* image cards */
+  .bcard.img image-slot {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; display: block;
+  }
+  .bcard.img::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,8,8,0) 42%, rgba(8,8,8,0.74));
+    z-index: 1; pointer-events: none;
+  }
+
+  /* dissolve slideshow */
+  .slideshow { position: absolute; inset: 0; z-index: 0; background: var(--surface); }
+  .slideshow img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    will-change: opacity;
+  }
+  .slideshow img.on { opacity: 1; }
+  .slideshow .empty-note {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: rgba(240,237,232,0.22);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slideshow img { transition: none; }
+  }
+
+  .bcap {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+    padding: 30px 18px 14px;
+    font-family: var(--mono);
+    font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg);
+    background: linear-gradient(180deg, transparent, rgba(8,8,8,0.82));
+    pointer-events: none;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 40px var(--gutter);
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ===== REVEAL ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    filter: blur(7px);
+    clip-path: inset(0 0 110% 0);
+    transition:
+      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--rd, 0s),
+      transform 1.15s cubic-bezier(0.16, 1, 0.3, 1) var(--rd, 0s),
+      filter 0.9s ease var(--rd, 0s),
+      clip-path 1.15s cubic-bezier(0.16, 1, 0.3, 1) var(--rd, 0s);
+  }
+  .reveal.in { opacity: 1; transform: none; filter: none; clip-path: inset(-22% -22% -22% -22%); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; filter: none; clip-path: none; transition: none; }
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1080px) {
+    .intro-grid { grid-template-columns: 1fr; gap: 54px; align-items: start; }
+    .intro-right { max-width: 420px; }
+    .portrait { flex: none; aspect-ratio: 4 / 5; }
+  }
+  @media (max-width: 1024px) {
+    .bento { grid-template-columns: repeat(6, 1fr); }
+    .b1 { grid-column: span 6; }
+    .b2 { grid-column: span 3; }
+    .b3 { grid-column: span 3; }
+    .b4 { grid-column: span 3; }
+    .b5 { grid-column: span 3; }
+    .b6 { grid-column: span 6; }
+  }
+  @media (max-width: 600px) {
+    .bento { grid-template-columns: 1fr; grid-auto-rows: clamp(210px, 42vh, 270px); }
+    .b1, .b2, .b3, .b4, .b5, .b6 { grid-column: span 1; }
+  }
+  @media (max-width: 560px) {
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 11px; letter-spacing: 0.1em; }
+    .intro-meta { flex-wrap: wrap; gap: 22px 32px; }
+  }
+</style>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="Sanbarto Mondal - Portfolio.html#top" class="nav-logo" aria-label="Sanbarto Mondal — home"><svg viewBox="0 0 257 121" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M104.604 92.748C110.396 92.7482 115.903 95.2593 119.701 99.6309L138.269 121H0L18.5674 99.6309C22.3659 95.2591 27.8736 92.748 33.665 92.748H104.604ZM161.922 27.2217C165.083 30.8604 166.824 35.5185 166.824 40.3389V121H138.269V76.1855H41.5811C17.0333 76.1855 7.01368 51.786 7.01367 37.3457C7.01367 22.9054 17.0333 0 41.5811 0H138.269L161.922 27.2217ZM207.01 27.2217C210.171 30.8604 211.912 35.5186 211.912 40.3389V121H183.356V0L207.01 27.2217ZM252.097 27.2217C255.258 30.8604 257 35.5185 257 40.3389V121H228.444V0L252.097 27.2217ZM119.586 21.501C115.787 25.8727 110.28 28.3828 104.488 28.3828H41.5791C37.5713 28.3828 35.0664 33.8603 35.0664 38.3418C35.0665 42.8232 37.5714 47.3047 41.5791 47.3047H138.268V0L119.586 21.501Z"></path></svg></a>
+    <div class="nav-links">
+      <a href="Sanbarto Mondal - Portfolio.html#work">Work</a>
+      <a href="About.html" class="active">About</a>
+      <a href="Sanbarto Mondal - Portfolio.html#experience">Experience</a>
+      <a href="Sanbarto Mondal - Portfolio.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- INTRO -->
+  <section class="block intro" id="top" data-screen-label="About — Intro">
+    <div class="section-label reveal"><span class="label">About me</span></div>
+    <div class="intro-grid">
+      <div class="intro-left">
+        <h1 class="reveal" style="font-size: 48px; font-weight: 400">Hi, I'm <span class="ital">Sanbarto</span></h1>
+        <p class="reveal" style="--rd: 0.08s">I design things that make ideas feel real. Whether it’s shaping a brand, crafting an illustration, or designing a digital experience, I love turning complex ideas into simple and meaningful visuals. My process combines curiosity, strategy, and creativity to build experiences people genuinely enjoy.</p>
+        <div class="intro-meta reveal" style="--rd: 0.24s">
+          <div class="meta-item">
+            <div class="meta-k">Based in</div>
+            <div class="meta-v" style="font-size: 18px">India</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-k">Focus</div>
+            <div class="meta-v" style="font-size: 18px">Brand, Illustration &amp; UI</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-k">Currently</div>
+            <div class="meta-v" style="font-size: 18px">Visual Designer, Aurva</div>
+          </div>
+        </div>
+        <div class="pills-label label reveal" style="--rd: 0.3s">Hobbies</div>
+        <div class="pills reveal" style="--rd: 0.36s">
+          <span class="pill">Photography</span>
+          <span class="pill">Sketching</span>
+          <span class="pill">Travel</span>
+          <span class="pill">Cricket</span>
+          <span class="pill">Badminton</span>
+          <span class="pill">Card Games</span>
+          <span class="pill">Movies</span>
+          <span class="pill">Food</span>
+          <span class="pill">Graffiti</span>
+        </div>
+      </div>
+      <div class="intro-right reveal" style="--rd: 0.12s">
+        <div class="portrait">
+          <image-slot id="aboutPortrait" shape="rounded" radius="8" src="uploads/portrait.png" fit="cover" position="50% 30%" placeholder="Drop a portrait"></image-slot>
+        </div>
+        <div class="portrait-cap">That's me</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="block" id="life" data-screen-label="About — Gallery" style="padding-top: 0;">
+    <div class="section-label reveal"><span class="label">Beyond the desk</span></div>
+    <p class="gallery-intro reveal">A few glimpses of life away from the screen - the places, people, and small moments that keep the work honest.</p>
+    <div class="bento">
+      <div class="bcard img b1 reveal">
+        <div class="slideshow" data-frame="road"></div>
+        <span class="bcap">On the road</span>
+      </div>
+      <div class="bcard img b2 reveal" style="--rd: 0.06s">
+        <div class="slideshow" data-frame="lens"></div>
+        <span class="bcap">Through the lens</span>
+      </div>
+      <div class="bcard img b3 reveal" style="--rd: 0.12s">
+        <div class="slideshow" data-frame="sketch"></div>
+        <span class="bcap">Sketching days</span>
+      </div>
+      <div class="bcard img b5 reveal" style="--rd: 0.06s">
+        <div class="slideshow" data-frame="graffiti"></div>
+        <span class="bcap">Graffiti</span>
+      </div>
+      <div class="bcard img b4 reveal" style="--rd: 0.12s">
+        <div class="slideshow" data-frame="trails"></div>
+        <span class="bcap">Trails &amp; travels</span>
+      </div>
+      <div class="bcard img b6 reveal" style="--rd: 0.18s">
+        <div class="slideshow" data-frame="friends"></div>
+        <span class="bcap">Friends &amp; frames</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2025 Sanbarto Mondal</span>
+    <span>DESIGNED WITH FIGMA &amp; CLAUDE</span>
+  </footer>
+
+<script src="image-slot.js"></script>
+<script>
+  // nav scrolled state
+  (function () {
+    const nav = document.getElementById("nav");
+    function onScroll() { nav.classList.toggle("scrolled", window.scrollY > 30); }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  })();
+
+  // reveal on scroll
+  (function () {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const els = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+    if (reduce || !("IntersectionObserver" in window)) {
+      els.forEach(function (el) { el.classList.add("in"); });
+      return;
+    }
+    const io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    els.forEach(function (el) { io.observe(el); });
+    setTimeout(function () { els.forEach(function (el) { el.classList.add("in"); }); }, 2600);
+  })();
+
+  // dissolve slideshow — 3 images per frame, continuous crossfade
+  (function () {
+    // Fill each array with 3 image paths from uploads/. Order = display order.
+    const GALLERY = {
+      road:     ["uploads/A.png", "uploads/B.png", "uploads/C.png"],   // On the road
+      lens:     ["uploads/P1.png", "uploads/P2.png", "uploads/P3.png", "uploads/P4.png"],   // Through the lens
+      sketch:   ["uploads/S1.png", "uploads/S2.png", "uploads/S3.png", "uploads/S4.png"],   // Sketching days
+      trails:   [],   // Trails & travels
+      graffiti: [],   // Graffiti
+      friends:  [],   // Friends & frames
+    };
+
+    const HOLD = 4000;   // ms each image stays fully visible
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    document.querySelectorAll(".slideshow").forEach(function (box, frameIndex) {
+      const key = box.getAttribute("data-frame");
+      const srcs = (GALLERY[key] || []).filter(Boolean);
+
+      if (srcs.length === 0) {
+        const note = document.createElement("div");
+        note.className = "empty-note";
+        note.textContent = "Add 3 moments";
+        box.appendChild(note);
+        return;
+      }
+
+      const imgs = srcs.map(function (src, i) {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "";
+        img.loading = i === 0 ? "eager" : "lazy";
+        img.decoding = "async";
+        if (i === 0) img.classList.add("on");
+        box.appendChild(img);
+        return img;
+      });
+
+      if (srcs.length === 1 || reduce) return; // single image: no cycling
+
+      let cur = 0;
+      // stagger each frame so they don't all flip in unison
+      const startDelay = (frameIndex % 3) * (HOLD / 3);
+      setTimeout(function () {
+        setInterval(function () {
+          const next = (cur + 1) % imgs.length;
+          imgs[cur].classList.remove("on");
+          imgs[next].classList.add("on");
+          cur = next;
+        }, HOLD);
+      }, startDelay);
+    });
+  })();
+</script>
+</body>
+</html>
