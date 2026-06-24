@@ -363,6 +363,9 @@
     .intro-meta { flex-wrap: wrap; gap: 22px 32px; }
   }
 </style>
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 </head>
 <body>
   <div class="noise"></div>
@@ -493,17 +496,19 @@
       road:     ["uploads/A.webp", "uploads/B.webp", "uploads/C.webp"],   // On the road
       lens:     ["uploads/P1.webp", "uploads/P2.webp", "uploads/P3.webp", "uploads/P4.webp"],   // Through the lens
       sketch:   ["uploads/S1.webp", "uploads/S2.webp", "uploads/S3.webp", "uploads/S4.webp"],   // Sketching days
-      trails:   [],   // Trails & travels
+      trails:   ["uploads/T1.webp", "uploads/T2.webp", "uploads/T3.webp", "uploads/T4.webp"],   // Trails & travels
       graffiti: ["uploads/G1.webp", "uploads/G2.webp", "uploads/G3.webp", "uploads/G4.webp"],   // Graffiti
-      friends:  [],   // Friends & frames
+      friends:  ["uploads/F1.webp", "uploads/F2.webp", "uploads/F3.webp", "uploads/F4.webp"],   // Friends & frames
     };
 
-    const HOLD = 4000;   // ms each image stays fully visible
+    const HOLD_TOP = 4000;     // ms each image holds — top row (cards 1-3)
+    const HOLD_BOTTOM = 6000;  // ms each image holds — bottom row (cards 4-6)
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     document.querySelectorAll(".slideshow").forEach(function (box, frameIndex) {
       const key = box.getAttribute("data-frame");
       const srcs = (GALLERY[key] || []).filter(Boolean);
+      const HOLD = frameIndex < 3 ? HOLD_TOP : HOLD_BOTTOM;  // bottom row cycles slower
 
       if (srcs.length === 0) {
         const note = document.createElement("div");

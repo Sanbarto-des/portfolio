@@ -20,6 +20,63 @@
     --gutter: clamp(28px, 7vw, 140px);
   }
 
+  /* ===== PRELOADER ===== */
+  .preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    background: var(--bg);
+    background-image: radial-gradient(115% 75% at 50% 48%, rgba(200, 184, 154, 0.07), transparent 62%);
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+  }
+  .preloader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .loader {
+    width: fit-content;
+    font-family: var(--mono);
+    font-weight: 500;
+    white-space: pre;
+    font-size: clamp(22px, 4vw, 34px);
+    letter-spacing: 0.14em;
+    line-height: 1.2em;
+    height: 1.2em;
+    overflow: hidden;
+    color: var(--gold);
+    text-shadow: 0 0 18px rgba(200, 184, 154, 0.35);
+  }
+  .loader::before {
+    content: "Loading...\A⌰oading...\A⌰⍜ading...\A⌰⍜⏃ding...\A⌰⍜⏃⎅ing...\A⌰⍜⏃⎅⟟ng...\A⌰⍜⏃⎅⟟⋏g...\A⌰⍜⏃⎅⟟⋏☌...\A⌰⍜⏃⎅⟟⋏☌⟒..\A⌰⍜⏃⎅⟟⋏☌⟒⏁.\A⌰⍜⏃⎅⟟⋏☌⟒⏁⋔";
+    white-space: pre;
+    display: inline-block;
+    animation: l39 1s infinite steps(11) alternate;
+  }
+  @keyframes l39 { 100% { transform: translateY(-100%); } }
+
+  /* thin scanning comms-line */
+  .pl-bar {
+    width: clamp(120px, 22vw, 210px);
+    height: 1px;
+    background: var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .pl-bar::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 38%;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: pl-scan 1.5s ease-in-out infinite;
+  }
+  @keyframes pl-scan { 0% { transform: translateX(-130%); } 100% { transform: translateX(330%); } }
+
+  @media (prefers-reduced-motion: reduce) { .preloader { display: none; } }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html { scroll-behavior: smooth; }
@@ -1144,8 +1201,35 @@
 <link id="gfont-Space-Grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap">
 <link id="gfont-Montserrat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap">
 <link id="gfont-Caveat" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&amp;display=swap">
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 </head>
 <body>
+  <div id="preloader" class="preloader" role="status" aria-label="Loading">
+    <div class="loader" aria-hidden="true"></div>
+    <div class="pl-bar" aria-hidden="true"></div>
+  </div>
+  <script>
+    (function () {
+      var pl = document.getElementById("preloader");
+      if (!pl) return;
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) { pl.remove(); return; }
+
+      var start = Date.now(), MIN = 2400, MAX = 4000, dismissed = false;
+      function done() {
+        if (dismissed) return; dismissed = true;
+        pl.classList.add("done");
+        setTimeout(function () { pl.remove(); }, 750);
+      }
+      function trigger() { setTimeout(done, Math.max(0, MIN - (Date.now() - start))); }
+
+      if (document.readyState === "complete") trigger();
+      else window.addEventListener("load", trigger);
+      setTimeout(done, MAX); // safety cap so it never traps the user
+    })();
+  </script>
   <canvas id="starsBg" class="stars-bg" aria-hidden="true"></canvas>
   <canvas id="bgDrift" class="drift-bg" aria-hidden="true"></canvas>
   <div class="noise"></div>
@@ -1429,72 +1513,72 @@
 
         <figure class="tcard">
           <div class="tquote-mark">&ldquo;</div>
-          <blockquote>Sanbarto turns vague briefs into systems you can actually build on. The CheQ illustration library still anchors our product today.</blockquote>
+          <blockquote>His designs don't just look good, they tell a story. That ability to create meaningful visual experiences makes him a valuable designer.</blockquote>
           <figcaption class="tauthor">
-            <div class="tpic"><image-slot id="testi1" shape="circle" placeholder="Photo"></image-slot></div>
+            <div class="tpic"><image-slot id="testi1" shape="circle" src="uploads/Shrishti.webp" fit="cover" placeholder="Photo"></image-slot></div>
             <div class="tmeta">
-              <span class="tname">Ananya Rao</span>
-              <span class="trole">Product Lead · CheQ</span>
+              <span class="tname">Shrishti Sinha</span>
+              <span class="trole">Design Manager · Swaglok</span>
             </div>
           </figcaption>
         </figure>
 
         <figure class="tcard">
           <div class="tquote-mark">&ldquo;</div>
-          <blockquote>Rare to find an illustrator who thinks in motion and components. Every handoff was clean, considered and on time.</blockquote>
+          <blockquote>Sanbarto consistently delivered high-quality work under tight timelines. His ability to move quickly without compromising on design quality made him a dependable member of the team.</blockquote>
           <figcaption class="tauthor">
-            <div class="tpic"><image-slot id="testi2" shape="circle" placeholder="Photo"></image-slot></div>
+            <div class="tpic"><image-slot id="testi2" shape="circle" src="uploads/Akhil.webp" fit="cover" placeholder="Photo"></image-slot></div>
             <div class="tmeta">
-              <span class="tname">Dev Mehta</span>
-              <span class="trole">Design Manager · Aurva</span>
+              <span class="tname">Akhil Thomas</span>
+              <span class="trole">Design Lead · CheQ</span>
             </div>
           </figcaption>
         </figure>
 
         <figure class="tcard">
           <div class="tquote-mark">&ldquo;</div>
-          <blockquote>He gave our club an identity that finally felt like us — loud, confident, unmistakably street.</blockquote>
+          <blockquote>Sanbarto brought both creativity and executional discipline to every project. He could adapt quickly, iterate efficiently, and deliver results that exceeded expectations.</blockquote>
           <figcaption class="tauthor">
-            <div class="tpic"><image-slot id="testi3" shape="circle" placeholder="Photo"></image-slot></div>
+            <div class="tpic"><image-slot id="testi3" shape="circle" src="uploads/Sanika.webp" fit="cover" placeholder="Photo"></image-slot></div>
             <div class="tmeta">
-              <span class="tname">Priya Nair</span>
-              <span class="trole">President · Cadence</span>
+              <span class="tname">Sanika Surve</span>
+              <span class="trole">Head of Design · Learnhill Tech. Ltd.</span>
             </div>
           </figcaption>
         </figure>
 
         <figure class="tcard">
           <div class="tquote-mark">&ldquo;</div>
-          <blockquote>The Dusk comic was a leap of craft. The ink work and pacing carried the whole story.</blockquote>
+          <blockquote>From concept development to final execution, he consistently delivered thoughtful designs that aligned with business goals and user expectations.</blockquote>
           <figcaption class="tauthor">
-            <div class="tpic"><image-slot id="testi4" shape="circle" placeholder="Photo"></image-slot></div>
+            <div class="tpic"><image-slot id="testi4" shape="circle" src="uploads/Rishabh.webp" fit="cover" placeholder="Photo"></image-slot></div>
             <div class="tmeta">
-              <span class="tname">Rohan Sengupta</span>
-              <span class="trole">Creative Director</span>
+              <span class="tname">Rishabh Lodha</span>
+              <span class="trole">Product Designer · CheQ</span>
             </div>
           </figcaption>
         </figure>
 
         <figure class="tcard">
           <div class="tquote-mark">&ldquo;</div>
-          <blockquote>Thoughtful, fast and genuinely collaborative. Our OPD flow tested better after his redesign.</blockquote>
+          <blockquote>Sanbarto's designs always felt implementation-friendly. The layouts were thoughtful, the details were clear, and translating them into code was a smooth process.</blockquote>
           <figcaption class="tauthor">
-            <div class="tpic"><image-slot id="testi5" shape="circle" placeholder="Photo"></image-slot></div>
+            <div class="tpic"><image-slot id="testi5" shape="circle" src="uploads/Varun.webp" fit="cover" placeholder="Photo"></image-slot></div>
             <div class="tmeta">
-              <span class="tname">Meera Iyer</span>
-              <span class="trole">UX Researcher · DocLove</span>
+              <span class="tname">Varun Sangai</span>
+              <span class="trole">Frontend Developer · Aurva</span>
             </div>
           </figcaption>
         </figure>
 
         <figure class="tcard">
           <div class="tquote-mark">&ldquo;</div>
-          <blockquote>Sanbarto sweats the small type and the big idea in equal measure. A genuine delight to work with.</blockquote>
+          <blockquote>His ability to rapidly explore concepts and translate them into thoughtful visual solutions helped accelerate several key initiatives across the team.</blockquote>
           <figcaption class="tauthor">
-            <div class="tpic"><image-slot id="testi6" shape="circle" placeholder="Photo"></image-slot></div>
+            <div class="tpic"><image-slot id="testi6" shape="circle" src="uploads/Sidhartshri.webp" fit="cover" placeholder="Photo"></image-slot></div>
             <div class="tmeta">
-              <span class="tname">Karthik Menon</span>
-              <span class="trole">Art Director</span>
+              <span class="tname">Sidharthshri Ahire</span>
+              <span class="trole">CEO &amp; Co-founder · 100KMPH</span>
             </div>
           </figcaption>
         </figure>
