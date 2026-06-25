@@ -111,7 +111,7 @@
     z-index: 10000;
   }
   .cursor-ship {
-    width: 22px; height: 22px;
+    width: 30px; height: 30px;
     filter: drop-shadow(0 0 5px rgba(200, 184, 154, 0.65));
     transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
   }
@@ -123,16 +123,16 @@
   }
   .cursor-ship .glass { fill: rgba(13, 13, 13, 0.4); stroke: none; }
   .cursor-trail {
-    width: 7px; height: 7px; border-radius: 50%;
+    width: 9px; height: 9px; border-radius: 50%;
     background: radial-gradient(circle, rgba(200, 184, 154, 0.85), rgba(200, 184, 154, 0) 70%);
     transform: translate(-50%, -50%);
     transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
   }
   body.cursor-hover .cursor-ship {
-    width: 30px; height: 30px;
+    width: 40px; height: 40px;
     filter: drop-shadow(0 0 9px rgba(200, 184, 154, 0.9));
   }
-  body.cursor-hover .cursor-trail { width: 15px; height: 15px; }
+  body.cursor-hover .cursor-trail { width: 19px; height: 19px; }
 
   a { color: inherit; text-decoration: none; }
 
@@ -751,190 +751,240 @@
     .about-left .pill { opacity: 1; animation: none; }
   }
 
-  /* ===== WORK — horizontal pinned gallery ===== */
-  .work-h { position: relative; }
-  .work-sticky {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    height: 100svh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    overflow: hidden;
+  /* ===== WORK — vertical stacking cards ===== */
+  .work-stack-sec {
+    --pin: clamp(86px, 13vh, 120px);
+    --pin-step: 16px;
+    position: relative;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: clamp(80px, 13vh, 160px) var(--gutter) clamp(70px, 12vh, 150px);
   }
-  .work-h-head {
+  .ws-head {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     gap: 24px;
-    padding: 0 var(--gutter);
-    margin-bottom: clamp(26px, 5vh, 52px);
+    margin-bottom: clamp(34px, 6vh, 70px);
   }
-  .work-h-head .section-label { margin-bottom: 0; }
-  .work-count {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .work-count .bar {
-    position: relative;
-    width: clamp(70px, 12vw, 140px);
-    height: 1px;
-    background: var(--line);
-    overflow: hidden;
-  }
-  .work-count .bar i {
-    position: absolute;
-    left: 0; top: 0;
-    height: 100%;
-    width: 0%;
-    background: var(--gold);
-  }
-
-  .work-track {
-    --wcard-w: clamp(260px, 27vw, 392px);
-    display: flex;
-    align-items: center;
-    gap: clamp(22px, 3vw, 52px);
-    padding: 0 calc(50vw - var(--wcard-w) / 2);
-    will-change: transform;
-  }
-  .wcard { flex: 0 0 var(--wcard-w); }
-  .wcard-inner {
-    transform: scale(0.84);
-    transform-origin: center center;
-    opacity: 0.6;
-    filter: saturate(0.55) brightness(0.74);
-    /* transform/filter/opacity are driven per-frame by scroll JS (no transition for 1:1 tracking) */
-  }
-  .wcard-link { display: block; }
-  .wcard-thumb {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    border: 1px solid var(--line);
-    border-radius: 5px;
-    overflow: hidden;
-    background: var(--surface);
-  }
-  .wcard-thumb image-slot { width: 100%; height: 100%; display: block; }
-  .wcard-idx {
-    position: absolute;
-    top: 14px; left: 16px;
-    z-index: 3;
+  .ws-head .section-label { margin-bottom: 0; }
+  .ws-intro {
+    max-width: 42ch;
     font-family: var(--serif);
     font-weight: 300;
-    font-size: clamp(26px, 2.2vw, 38px);
-    line-height: 1;
-    color: #fff;
-    mix-blend-mode: difference;
-    pointer-events: none;
+    font-size: clamp(14px, 1.2vw, 17px);
+    line-height: 1.55;
+    color: rgba(240, 237, 232, 0.74);
+    text-align: right;
+    text-wrap: pretty;
   }
-  .wcard-badge {
+
+  .ws-stack { position: relative; }
+  .ws-card {
+    position: sticky;
+    top: calc(var(--pin) + var(--i) * var(--pin-step));
+    height: min(74vh, 640px);
+    margin-bottom: clamp(36px, 8vh, 88px);
+    transform-origin: center top;
+    will-change: transform;
+  }
+  .ws-card:last-child { margin-bottom: 0; }
+
+  .ws-card-inner {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1.08fr;
+    gap: clamp(26px, 4vw, 70px);
+    align-items: center;
+    padding: clamp(30px, 3.6vw, 60px);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(200, 184, 154, 0.06), transparent 52%),
+      var(--surface);
+    box-shadow: 0 -1px 0 rgba(240, 237, 232, 0.05) inset, 0 40px 80px -42px rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+  }
+
+  .ws-meta { min-width: 0; display: flex; flex-direction: column; }
+  .ws-index {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: clamp(20px, 4vh, 38px);
+  }
+  .ws-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(28px, 3.4vw, 54px);
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+    color: var(--fg);
+  }
+  .ws-sub {
+    margin-top: 13px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ws-desc {
+    margin-top: clamp(16px, 3vh, 26px);
+    max-width: 42ch;
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(14px, 1.15vw, 18px);
+    line-height: 1.6;
+    color: rgba(240, 237, 232, 0.82);
+    text-wrap: pretty;
+  }
+  .ws-tags { display: flex; flex-wrap: wrap; gap: 9px; margin-top: clamp(20px, 4vh, 32px); }
+  .ws-tags span {
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    padding: 7px 16px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    color: rgba(240, 237, 232, 0.8);
+  }
+  .ws-cta {
+    margin-top: clamp(24px, 5vh, 42px);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg);
+    text-decoration: none;
+    padding-bottom: 4px;
+    position: relative;
+  }
+  .ws-cta .ar { color: var(--gold); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .ws-cta::after {
+    content: "";
     position: absolute;
-    top: 13px; right: 14px;
+    left: 0; bottom: 0;
+    width: 0; height: 1px;
+    background: var(--gold);
+    transition: width 0.4s ease;
+  }
+  .ws-cta:hover { color: var(--gold); }
+  .ws-cta:hover::after { width: calc(100% - 30px); }
+  .ws-cta:hover .ar { transform: translate(4px, -4px); }
+
+  .ws-visual {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .ws-visual image-slot { width: 100%; height: 100%; display: block; }
+  .ws-visual::after {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(8, 8, 8, 0) 60%, rgba(8, 8, 8, 0.4));
+  }
+
+  /* ===== MORE WORK — small cards ===== */
+  .ws-more { margin-top: clamp(60px, 11vh, 130px); }
+  .ws-more .section-label { display: flex; align-items: center; gap: 14px; margin-bottom: clamp(26px, 4vh, 40px); }
+  .ws-more .section-label::before { content: ""; width: 32px; height: 1px; background: var(--gold); }
+  .ws-more-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(16px, 2vw, 30px);
+  }
+  .ws-mcard { display: block; text-decoration: none; color: inherit; }
+  .ws-mcard-thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ws-mcard-thumb image-slot { width: 100%; height: 100%; display: block; }
+  .ws-mcard-badge {
+    position: absolute;
+    top: 12px; right: 12px;
     z-index: 3;
-    width: 40px; height: 40px;
+    width: 34px; height: 34px;
     border-radius: 50%;
     border: 1px solid var(--line);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--mono);
-    font-size: 17px;
+    font-size: 15px;
     color: var(--fg);
     background: rgba(13, 13, 13, 0.42);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
   }
-  .wcard-link:hover .wcard-badge {
-    background: var(--gold);
-    color: var(--bg);
-    border-color: var(--gold);
-    transform: translate(2px, -2px);
-  }
-  .wcard-meta {
-    margin-top: 22px;
-    padding-right: 6px;
-  }
-  .wcard-title {
+  .ws-mcard:hover .ws-mcard-thumb { border-color: rgba(240, 237, 232, 0.4); transform: translateY(-4px); }
+  .ws-mcard:hover .ws-mcard-badge { background: var(--gold); color: var(--bg); border-color: var(--gold); transform: translate(2px, -2px); }
+  .ws-mcard-title {
+    margin-top: 16px;
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(22px, 1.9vw, 31px);
-    line-height: 1.12;
+    font-size: clamp(17px, 1.5vw, 23px);
+    line-height: 1.14;
     letter-spacing: -0.01em;
     color: var(--fg);
-    display: block;
   }
-  .wcard-sub {
-    margin-top: 9px;
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--muted);
-    transition: color 0.35s ease;
-  }
-  .wcard-tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 16px;
-  }
-  .wcard-tags span {
-    border: 1px solid var(--line);
-    border-radius: 100px;
-    padding: 6px 14px;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    white-space: nowrap;
-    transition: color 0.35s ease, border-color 0.35s ease;
-  }
-  .wcard.is-focus .wcard-tags span {
-    color: var(--fg);
-    border-color: rgba(240, 237, 232, 0.4);
-  }
-  .wcard.is-focus .wcard-sub { color: var(--fg); }
-  .work-hint {
-    text-align: center;
-    margin-top: clamp(22px, 4vh, 46px);
+  .ws-mcard-sub {
+    margin-top: 8px;
     font-family: var(--mono);
     font-size: 11px;
-    letter-spacing: 0.26em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
   }
-  .work-hint .ar { color: var(--gold); }
 
-  /* fallback: no scroll-pin (mobile + reduced motion) — native horizontal swipe */
-  .work-h.is-static .work-sticky {
-    position: static;
-    height: auto;
-    padding: clamp(70px, 12vh, 150px) 0;
-    overflow: visible;
+  @media (max-width: 1080px) {
+    .ws-card-inner { grid-template-columns: 1fr 1fr; }
   }
-  .work-h.is-static .work-track {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    transform: none !important;
-    padding: 0 max(16px, calc(50vw - var(--wcard-w) / 2));
-    scrollbar-width: none;
+  @media (max-width: 860px) {
+    .ws-more-grid { grid-template-columns: 1fr 1fr; }
   }
-  .work-h.is-static .work-track::-webkit-scrollbar { display: none; }
-  .work-h.is-static .wcard { scroll-snap-align: center; }
+  /* mobile: drop the pin/overlap — clean flow column */
+  @media (max-width: 820px) {
+    .ws-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .ws-intro { text-align: left; }
+    .ws-card {
+      position: static;
+      height: auto;
+      margin-bottom: clamp(20px, 4vh, 36px);
+      transform: none !important;
+      opacity: 1 !important;
+    }
+    .ws-card-inner { grid-template-columns: 1fr; gap: 26px; padding: 24px; }
+    .ws-visual { aspect-ratio: 4 / 3; height: auto; }
+    .ws-title { font-size: clamp(26px, 7.5vw, 38px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ws-card {
+      position: static;
+      height: auto;
+      transform: none !important;
+      opacity: 1 !important;
+      margin-bottom: clamp(20px, 4vh, 36px);
+    }
+    .ws-visual { aspect-ratio: 4 / 3; height: auto; }
+  }
 
   /* ===== EXPERIENCE ===== */
   .exp-list { border-top: 1px solid var(--line); }
@@ -1171,7 +1221,6 @@
     .nav-links a { font-size: 11px; letter-spacing: 0.1em; }
     .hero-sat { top: 30%; right: -22%; width: min(82vw, 560px); opacity: 0.5; }
     .stat-card { min-width: 130px; padding: 14px 18px 12px; }
-    .work-track { --wcard-w: min(78vw, 360px); gap: 16px; }
     .exp-row {
       grid-template-columns: 1fr auto;
       grid-template-areas: "year type" "role role";
@@ -1189,7 +1238,12 @@
     .scroll-tag { display: none; }
     .hero-sat { opacity: 0.32; right: -34%; top: 24%; }
     .stats { grid-template-columns: 1fr 1fr; }
-    .wcard-tags span { font-size: 10px; padding: 5px 11px; }
+    .ws-tags span { font-size: 10px; padding: 5px 12px; }
+  }
+
+  /* Hide the system cursor on mouse devices so only the custom cursor shows */
+  @media (hover: hover) and (pointer: fine) {
+    * { cursor: none !important; }
   }
 
   @media (hover: none), (pointer: coarse) {
@@ -1291,6 +1345,128 @@
     <div class="ticker-track" id="tickerTrack"></div>
   </div>
 
+  <!-- WORK -->
+  <section class="work-stack-sec" id="work" data-screen-label="Work">
+    <div class="ws-head">
+      <div class="section-label reveal"><span class="label">Projects</span></div>
+      <p class="ws-intro reveal">Selected work — keep scrolling, each project layers over the last.</p>
+    </div>
+
+    <div class="ws-stack" id="wsStack">
+
+      <article class="ws-card" style="--i: 0">
+        <div class="ws-card-inner">
+          <div class="ws-meta">
+            <span class="ws-index">Project 01</span>
+            <span class="ws-title">CheQ — Illustration Library</span>
+            <div class="ws-sub">Illustration Set · 2025</div>
+            <p class="ws-desc">A cohesive illustration system that gives CheQ's product a warm, human voice — built to flex across screens, onboarding, and campaigns.</p>
+            <div class="ws-tags"><span>Branding</span><span>UI</span></div>
+            <a class="ws-cta" href="/cheq-illustration-library" data-cursor>View project <span class="ar">↗</span></a>
+          </div>
+          <div class="ws-visual">
+            <image-slot id="work1" shape="rect" src="uploads/cheq.png" placeholder="Drop thumbnail — CheQ"></image-slot>
+          </div>
+        </div>
+      </article>
+
+      <article class="ws-card" style="--i: 1">
+        <div class="ws-card-inner">
+          <div class="ws-meta">
+            <span class="ws-index">Project 02</span>
+            <span class="ws-title">Aurva — Brand Identity</span>
+            <div class="ws-sub">Graphic Design · 2025 – 2026</div>
+            <p class="ws-desc">A confident brand identity for a data-security company — a distinctive mark, a flexible visual system, and marketing built to scale with the team.</p>
+            <div class="ws-tags"><span>Branding</span><span>Marketing</span></div>
+            <a class="ws-cta" href="/aurva-brand-identity" data-cursor>View project <span class="ar">↗</span></a>
+          </div>
+          <div class="ws-visual">
+            <image-slot id="work2" shape="rect" src="uploads/aurv.png" placeholder="Drop thumbnail — Aurva"></image-slot>
+          </div>
+        </div>
+      </article>
+
+      <article class="ws-card" style="--i: 2">
+        <div class="ws-card-inner">
+          <div class="ws-meta">
+            <span class="ws-index">Project 03</span>
+            <span class="ws-title">100kmph — Apparel Design</span>
+            <div class="ws-sub">Fashion Graphics · 2024</div>
+            <p class="ws-desc">Apparel graphics for a motorsport-inspired label — translating speed, grit, and adrenaline into bold, wearable design.</p>
+            <div class="ws-tags"><span>Merchandise</span><span>Marketing</span></div>
+            <a class="ws-cta" href="/100kmph-apparel-design" data-cursor>View project <span class="ar">↗</span></a>
+          </div>
+          <div class="ws-visual">
+            <image-slot id="work3" shape="rect" src="uploads/100kmph.png" placeholder="Drop thumbnail — 100kmph"></image-slot>
+          </div>
+        </div>
+      </article>
+
+      <article class="ws-card" style="--i: 3">
+        <div class="ws-card-inner">
+          <div class="ws-meta">
+            <span class="ws-index">Project 04</span>
+            <span class="ws-title">Dusk — Comic Book Design</span>
+            <div class="ws-sub">Illustration · 2024</div>
+            <p class="ws-desc">A self-made comic — characters, panels, and a moody world drawn from scratch, where illustration meets sequential storytelling.</p>
+            <div class="ws-tags"><span>Drawing</span><span>Storytelling</span></div>
+            <a class="ws-cta" href="/dusk-comic-book-design" data-cursor>View project <span class="ar">↗</span></a>
+          </div>
+          <div class="ws-visual">
+            <image-slot id="work4" shape="rect" src="uploads/dusk.png" placeholder="Drop thumbnail — Dusk"></image-slot>
+          </div>
+        </div>
+      </article>
+
+      <article class="ws-card" style="--i: 4">
+        <div class="ws-card-inner">
+          <div class="ws-meta">
+            <span class="ws-index">Project 05</span>
+            <span class="ws-title">Cadence — Dance Club Identity</span>
+            <div class="ws-sub">Branding · 2025</div>
+            <p class="ws-desc">Brand identity for a college dance club — an energetic mark and visual system built to move with the rhythm of the stage.</p>
+            <div class="ws-tags"><span>Identity</span><span>Logo</span></div>
+            <a class="ws-cta" href="/cadence-dance-club-identity" data-cursor>View project <span class="ar">↗</span></a>
+          </div>
+          <div class="ws-visual">
+            <image-slot id="work5" shape="rect" src="uploads/cdnc.png" placeholder="Drop thumbnail — Cadence"></image-slot>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="ws-more">
+      <div class="section-label reveal"><span class="label">More work</span></div>
+      <div class="ws-more-grid">
+        <a class="ws-mcard reveal" href="/graphic-design-compilation" data-cursor>
+          <div class="ws-mcard-thumb">
+            <image-slot id="work6" shape="rect" src="uploads/GC.png" placeholder="Drop thumbnail"></image-slot>
+            <span class="ws-mcard-badge">↗</span>
+          </div>
+          <div class="ws-mcard-title">Graphic Design Compilation</div>
+          <div class="ws-mcard-sub">Graphics · 2022 – 2025</div>
+        </a>
+        <a class="ws-mcard reveal" href="/decathlon-sticker-design" data-cursor style="--rd: 0.08s">
+          <div class="ws-mcard-thumb">
+            <image-slot id="work7" shape="rect" src="uploads/dec.png" placeholder="Drop thumbnail"></image-slot>
+            <span class="ws-mcard-badge">↗</span>
+          </div>
+          <div class="ws-mcard-title">Decathlon — Sticker Design</div>
+          <div class="ws-mcard-sub">Graphic Design Task · 2025</div>
+        </a>
+        <a class="ws-mcard reveal" href="/doclove-app-design" data-cursor style="--rd: 0.16s">
+          <div class="ws-mcard-thumb">
+            <image-slot id="work8" shape="rect" src="uploads/DOC.png" placeholder="Drop thumbnail"></image-slot>
+            <span class="ws-mcard-badge">↗</span>
+          </div>
+          <div class="ws-mcard-title">Doclove — App Design</div>
+          <div class="ws-mcard-sub">UX/UI · 2024</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- ABOUT -->
   <section class="block" id="about" data-screen-label="About">
     <div class="section-label reveal"><span class="label">About me</span></div>
@@ -1317,149 +1493,6 @@
           <div class="tv-fx tv-static" aria-hidden="true"></div>
           <div class="tv-fx tv-scan" aria-hidden="true"></div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WORK -->
-  <section class="work-h" id="work" data-screen-label="Work">
-    <div class="work-sticky">
-      <div class="work-h-head">
-        <div class="section-label reveal"><span class="label">PROJECTS</span></div>
-        <div class="work-count reveal">
-          <span>Scroll to explore</span>
-          <span class="bar"><i id="workBar"></i></span>
-        </div>
-      </div>
-      <div class="work-track" id="workTrack">
-        <article class="wcard">
-          <div class="wcard-inner">
-            <a class="wcard-link" href="/cheq-illustration-library" data-cursor>
-              <div class="wcard-thumb">
-                <image-slot id="work1" shape="rect" src="uploads/cheq.png" placeholder="Drop thumbnail — 100kmph"></image-slot>
-                <span class="wcard-idx">01</span>
-                <span class="wcard-badge">↗</span>
-              </div>
-              <div class="wcard-meta">
-                <span class="wcard-title">CheQ - Illustration Library</span>
-                <div class="wcard-sub">ILLUSTRATION SET · 2025</div>
-                <div class="wcard-tags"><span>Branding</span><span>UI</span></div>
-              </div>
-            </a>
-          </div>
-        </article>
-        <article class="wcard">
-          <div class="wcard-inner">
-            <a class="wcard-link" href="/aurva-brand-identity" data-cursor>
-              <div class="wcard-thumb">
-                <image-slot id="work2" shape="rect" src="uploads/aurv.png" placeholder="Drop thumbnail — Compilation"></image-slot>
-                <span class="wcard-idx">02</span>
-                <span class="wcard-badge">↗</span>
-              </div>
-              <div class="wcard-meta">
-                <span class="wcard-title">Aurva - Brand Identity</span>
-                <div class="wcard-sub">GRAPHIC DESIGN · 2025 - 2026</div>
-                <div class="wcard-tags"><span>Branding</span><span>Marketing</span></div>
-              </div>
-            </a>
-          </div>
-        </article>
-        <article class="wcard">
-          <div class="wcard-inner">
-            <a class="wcard-link" href="/graphic-design-compilation" data-cursor>
-              <div class="wcard-thumb">
-                <image-slot id="work3" shape="rect" src="uploads/GC.png" placeholder="Drop thumbnail — Graphic Novel"></image-slot>
-                <span class="wcard-idx">03</span>
-                <span class="wcard-badge">↗</span>
-              </div>
-              <div class="wcard-meta">
-                <span class="wcard-title">Graphic Design Compilation</span>
-                <div class="wcard-sub">GRAPHICS · 2022 - 2025 (COLLEGE)</div>
-                <div class="wcard-tags"><span>Illustration</span><span>Layout</span></div>
-              </div>
-            </a>
-          </div>
-        </article>
-        <article class="wcard">
-          <div class="wcard-inner">
-            <a class="wcard-link" href="/100kmph-apparel-design" data-cursor>
-              <div class="wcard-thumb">
-                <image-slot id="work4" shape="rect" src="uploads/100kmph.png" placeholder="Drop thumbnail — DocLove"></image-slot>
-                <span class="wcard-idx">04</span>
-                <span class="wcard-badge">↗</span>
-              </div>
-              <div class="wcard-meta">
-                <span class="wcard-title">100kmph - Apparel Design</span>
-                <div class="wcard-sub">FASHION GRAPHICS · 2024</div>
-                <div class="wcard-tags"><span>Merchandise</span><span>Marketing</span></div>
-              </div>
-            </a>
-          </div>
-        </article>
-        <article class="wcard">
-          <div class="wcard-inner">
-            <a class="wcard-link" href="/decathlon-sticker-design" data-cursor>
-              <div class="wcard-thumb">
-                <image-slot id="work5" shape="rect" src="uploads/dec.png" placeholder="Drop thumbnail — Poster Series"></image-slot>
-                <span class="wcard-idx">05</span>
-                <span class="wcard-badge">↗</span>
-              </div>
-              <div class="wcard-meta">
-                <span class="wcard-title">Decathlon - Sticker Design</span>
-                <div class="wcard-sub">GRAPHIC DESIGN TASK · 2025</div>
-                <div class="wcard-tags"><span>Sports</span><span>Product</span></div>
-              </div>
-            </a>
-          </div>
-        </article>
-        <article class="wcard">
-          <div class="wcard-inner">
-            <a class="wcard-link" href="/cadence-dance-club-identity" data-cursor>
-              <div class="wcard-thumb">
-                <image-slot id="work6" shape="rect" src="uploads/cdnc.png" placeholder="Drop thumbnail — Brand Identity"></image-slot>
-                <span class="wcard-idx">06</span>
-                <span class="wcard-badge">↗</span>
-              </div>
-              <div class="wcard-meta">
-                <span class="wcard-title">Cadence - Dance Club Identity</span>
-                <div class="wcard-sub">BRANDING · 2025</div>
-                <div class="wcard-tags"><span>Identity</span><span>Logo</span></div>
-              </div>
-            </a>
-          </div>
-        </article>
-        <article class="wcard">
-          <div class="wcard-inner">
-            <a class="wcard-link" href="/dusk-comic-book-design" data-cursor>
-              <div class="wcard-thumb">
-                <image-slot id="work7" shape="rect" src="uploads/dusk.png" placeholder="Drop thumbnail — Editorial"></image-slot>
-                <span class="wcard-idx">07</span>
-                <span class="wcard-badge">↗</span>
-              </div>
-              <div class="wcard-meta">
-                <span class="wcard-title">Dusk - Comic Book Design</span>
-                <div class="wcard-sub">ILLUSTRATION · 2024</div>
-                <div class="wcard-tags"><span>Drawing</span><span>Storytelling</span></div>
-              </div>
-            </a>
-          </div>
-        </article>
-        <article class="wcard">
-          <div class="wcard-inner">
-            <a class="wcard-link" href="/doclove-app-design" data-cursor>
-              <div class="wcard-thumb">
-                <image-slot id="work8" shape="rect" src="uploads/DOC.png" placeholder="Drop thumbnail — Motion Study"></image-slot>
-                <span class="wcard-idx">08</span>
-                <span class="wcard-badge">↗</span>
-              </div>
-              <div class="wcard-meta">
-                <span class="wcard-title">Doclove - App Design</span>
-                <div class="wcard-sub">UX/UI · 2024</div>
-                <div class="wcard-tags"><span>User Interface</span><span>Graphics</span></div>
-              </div>
-            </a>
-          </div>
-        </article>
       </div>
     </div>
   </section>
@@ -1942,106 +1975,41 @@
     window.addEventListener("mousemove", onMove, { passive: true });
   })();
 
-  // ===== WORK — horizontal pinned gallery (vertical scroll drives sideways travel) =====
+  // ===== WORK — vertical stacking cards (covered cards recede with a slight scale; stay fully opaque) =====
   (function () {
-    const section = document.getElementById("work");
-    const track = document.getElementById("workTrack");
-    const fill = document.getElementById("workBar");
-    if (!section || !track) return;
-    const cards = Array.prototype.slice.call(track.querySelectorAll(".wcard"));
-    if (!cards.length) return;
-    const inners = cards.map(function (c) { return c.querySelector(".wcard-inner"); });
-    const thumbs = cards.map(function (c) { return c.querySelector(".wcard-thumb"); });
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mqStack = window.matchMedia("(min-width: 821px)");
+    const cards = Array.prototype.slice.call(document.querySelectorAll(".ws-card"));
+    if (!cards.length) return;
 
-    let maxShift = 0, isStatic = false;
+    const MIN_SCALE = 0.92;    // how small a fully-covered card gets (opacity stays 100%)
 
-    function measure() {
-      const mobile = window.matchMedia("(max-width: 880px)").matches;
-      isStatic = mobile || reduce;
-      section.classList.toggle("is-static", isStatic);
-      if (isStatic) {
-        section.style.height = "";
-        track.style.transform = "";
-        maxShift = 0;
-      } else {
-        // shift so the LAST card's center lands exactly at viewport center at p=1
-        // (so the section keeps pinning until the final card is fully centered)
-        const lastInner = inners[inners.length - 1];
-        const target = lastInner || cards[cards.length - 1];
-        track.style.transform = "";
-        const tr = track.getBoundingClientRect();
-        const cr = target.getBoundingClientRect();
-        const cardCenterFromTrackStart = (cr.left - tr.left) + cr.width / 2;
-        maxShift = Math.max(0, cardCenterFromTrackStart - window.innerWidth / 2);
-        section.style.height = (window.innerHeight + maxShift) + "px";
-      }
-    }
-
-    // continuous center-focus zoom: nearer the viewport centre → larger + brighter
-    function paintCards() {
-      const vc = window.innerWidth / 2;
-      const thr = window.innerWidth * 0.42;
-      const zoom = (window.__workZoom != null ? window.__workZoom : 1);
-      for (let i = 0; i < cards.length; i++) {
-        const r = cards[i].getBoundingClientRect();
-        let t = 1 - Math.abs((r.left + r.width / 2) - vc) / thr;
-        if (t < 0) t = 0; else if (t > 1) t = 1;
-        const e = t * t * (3 - 2 * t); // smoothstep
-        const scale = 0.84 + 0.18 * e * zoom;
-        inners[i].style.transform = "scale(" + scale.toFixed(3) + ")";
-        inners[i].style.opacity = (0.55 + 0.45 * e).toFixed(3);
-        inners[i].style.filter = "saturate(" + (0.55 + 0.45 * e).toFixed(2) + ") brightness(" + (0.74 + 0.26 * e).toFixed(2) + ")";
-        const glow = (0.30 * e).toFixed(3);
-        if (thumbs[i]) {
-          thumbs[i].style.borderColor = "rgba(240,237,232," + (0.12 + 0.40 * e).toFixed(3) + ")";
-        }
-        cards[i].classList.toggle("is-focus", e > 0.6);
-      }
-    }
+    function reset() { cards.forEach(function (c) { c.style.transform = ""; }); }
 
     let ticking = false;
-    function schedule(fn) {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(function () { ticking = false; fn(); });
+    function update() {
+      ticking = false;
+      if (reduce || !mqStack.matches) { reset(); return; }
+      const vh = window.innerHeight;
+      for (let i = 0; i < cards.length; i++) {
+        const next = cards[i + 1];
+        if (!next) { cards[i].style.transform = ""; continue; }
+        const nextRect = next.getBoundingClientRect();
+        const nextPin = parseFloat(getComputedStyle(next).top) || 0;
+        // p: 0 when the next card enters from the bottom, 1 when it reaches its pin
+        let p = (vh - nextRect.top) / (vh - nextPin);
+        p = Math.max(0, Math.min(1, p));
+        const scale = 1 - (1 - MIN_SCALE) * p;
+        cards[i].style.transform = "scale(" + scale.toFixed(4) + ")";
+      }
     }
-
-    function onWindowScroll() {
-      schedule(function () {
-        if (!isStatic) {
-          const top = section.getBoundingClientRect().top;
-          let p = maxShift > 0 ? -top / maxShift : 0;
-          if (p < 0) p = 0; else if (p > 1) p = 1;
-          track.style.transform = "translate3d(" + (-p * maxShift).toFixed(2) + "px,0,0)";
-          if (fill) fill.style.width = (p * 100).toFixed(1) + "%";
-        }
-        paintCards();
-      });
+    function onScroll() {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
     }
-
-    track.addEventListener("scroll", function () {
-      if (!isStatic) return;
-      schedule(function () {
-        const denom = Math.max(1, track.scrollWidth - track.clientWidth);
-        let p = track.scrollLeft / denom;
-        if (p < 0) p = 0; else if (p > 1) p = 1;
-        if (fill) fill.style.width = (p * 100).toFixed(1) + "%";
-        paintCards();
-      });
-    }, { passive: true });
-
-    window.addEventListener("scroll", onWindowScroll, { passive: true });
-    window.addEventListener("resize", function () { measure(); onWindowScroll(); }, { passive: true });
-
-    measure();
-    onWindowScroll();
-    // re-measure after fonts/images settle (card widths can shift)
-    requestAnimationFrame(function () { measure(); onWindowScroll(); });
-    setTimeout(function () { measure(); onWindowScroll(); }, 700);
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () { measure(); onWindowScroll(); });
-    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    mqStack.addEventListener("change", onScroll);
+    update();
   })();
 </script>
 <script>
@@ -2405,9 +2373,7 @@
     "starsOn": true,
     "satelliteOn": true,
     "shootingOn": true,
-    "driftOn": true,
-    "workCardW": 27,
-    "workZoom": 100
+    "driftOn": true
   }/*EDITMODE-END*/;
 
   function PortfolioTweaks() {
@@ -2437,13 +2403,6 @@
       const sat = document.getElementById("heroSat");
       if (sat) sat.style.display = t.satelliteOn ? "" : "none";
     }, [t.satelliteOn]);
-    React.useEffect(() => {
-      const track = document.getElementById("workTrack");
-      if (track) track.style.setProperty("--wcard-w", "clamp(240px, " + t.workCardW + "vw, 440px)");
-      window.__workZoom = t.workZoom / 100;
-      window.dispatchEvent(new Event("resize"));
-    }, [t.workCardW, t.workZoom]);
-
     return (
       <TweaksPanel title="Tweaks">
         <TweakSection label="Hero" />
@@ -2465,11 +2424,6 @@
                      onChange={(v) => setTweak("driftOn", v)} />
         <TweakToggle label="Satellite" value={t.satelliteOn}
                      onChange={(v) => setTweak("satelliteOn", v)} />
-        <TweakSection label="Work gallery" />
-        <TweakSlider label="Card size" value={t.workCardW} min={20} max={40} step={1} unit="vw"
-                     onChange={(v) => setTweak("workCardW", v)} />
-        <TweakSlider label="Center zoom" value={t.workZoom} min={0} max={180} step={10} unit="%"
-                     onChange={(v) => setTweak("workZoom", v)} />
       </TweaksPanel>
     );
   }
