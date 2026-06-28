@@ -209,6 +209,50 @@
   .nav-links a:hover { color: var(--gold); }
   .nav-links a:hover::after { width: 100%; }
 
+  /* highlighted Resume button — stands out from the plain text links */
+  .nav-links a.nav-resume {
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 100px;
+    padding: 9px 18px;
+    background: rgba(200, 184, 154, 0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+  }
+  .nav-links a.nav-resume::after { display: none; }   /* no underline */
+  .nav-links a.nav-resume .ar { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+  .nav-links a.nav-resume:hover {
+    color: var(--bg);
+    background: var(--gold);
+    box-shadow: 0 8px 22px -10px rgba(200, 184, 154, 0.6);
+  }
+  .nav-links a.nav-resume:hover .ar { transform: translate(2px, -2px); }
+
+  /* hamburger toggle — hidden on desktop, shown on mobile */
+  .nav-toggle {
+    display: none;
+    position: relative;
+    z-index: 2;
+    width: 26px; height: 17px;   /* match the logo height */
+    background: none; border: 0; padding: 0;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .nav-toggle span {
+    display: block;
+    height: 1.5px; width: 100%;
+    background: var(--fg);
+    border-radius: 2px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, background 0.3s ease;
+  }
+  nav.menu-open .nav-toggle span:nth-child(1) { transform: translateY(7.75px) rotate(45deg); }
+  nav.menu-open .nav-toggle span:nth-child(2) { opacity: 0; }
+  nav.menu-open .nav-toggle span:nth-child(3) { transform: translateY(-7.75px) rotate(-45deg); }
+  .nav-logo { position: relative; z-index: 2; }
+
   /* ===== HERO ===== */
   .hero {
     min-height: 100vh;
@@ -354,6 +398,7 @@
     letter-spacing: -0.01em;
     max-width: 14ch;
   }
+  .h1-word { white-space: nowrap; }  /* keep each word intact when the title wraps */
   .hero-bio {
     margin-top: clamp(26px, 4vh, 44px);
     max-width: var(--bio-width, 46ch);
@@ -842,33 +887,33 @@
     letter-spacing: 0.05em;
     color: rgba(240, 237, 232, 0.8);
   }
+  /* primary CTA — gold pill, high hierarchy above the muted tags */
   .ws-cta {
     margin-top: clamp(24px, 5vh, 42px);
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 11px;
     width: fit-content;
     font-family: var(--mono);
     font-size: 12px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--fg);
+    color: var(--gold);
     text-decoration: none;
-    padding-bottom: 4px;
-    position: relative;
+    padding: 13px 24px;
+    border: 1px solid var(--gold);
+    border-radius: 100px;
+    background: rgba(200, 184, 154, 0.08);
+    transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .ws-cta .ar { color: var(--gold); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-  .ws-cta::after {
-    content: "";
-    position: absolute;
-    left: 0; bottom: 0;
-    width: 0; height: 1px;
+  .ws-cta .ar { color: inherit; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .ws-cta:hover {
     background: var(--gold);
-    transition: width 0.4s ease;
+    color: var(--bg);
+    box-shadow: 0 12px 32px -12px rgba(200, 184, 154, 0.55);
+    transform: translateY(-2px);
   }
-  .ws-cta:hover { color: var(--gold); }
-  .ws-cta:hover::after { width: calc(100% - 30px); }
-  .ws-cta:hover .ar { transform: translate(4px, -4px); }
+  .ws-cta:hover .ar { transform: translate(3px, -3px); }
 
   .ws-visual {
     position: relative;
@@ -951,19 +996,45 @@
   @media (max-width: 860px) {
     .ws-more-grid { grid-template-columns: 1fr 1fr; }
   }
-  /* mobile: drop the pin/overlap — clean flow column */
+  /* mobile: keep the sticky overlap stacking, but a compact single-column card */
   @media (max-width: 820px) {
     .ws-head { flex-direction: column; align-items: flex-start; gap: 14px; }
     .ws-card {
-      position: static;
-      height: auto;
-      margin-bottom: clamp(20px, 4vh, 36px);
-      transform: none !important;
-      opacity: 1 !important;
+      height: auto;   /* fit content — JS moves the thumbnail directly under the project number */
+      margin-bottom: clamp(26px, 6vh, 56px);
     }
-    .ws-card-inner { grid-template-columns: 1fr; gap: 26px; padding: 24px; }
-    .ws-visual { aspect-ratio: 4 / 3; height: auto; }
-    .ws-title { font-size: clamp(26px, 7.5vw, 38px); }
+    .ws-card-inner {
+      position: relative;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      align-items: stretch;
+      gap: 0;
+      padding: 22px;
+      transition: transform 0.18s ease, border-color 0.3s ease;
+    }
+    .ws-index { margin-bottom: 16px; }
+    .ws-visual {
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 16 / 10;
+      margin: 0 0 clamp(20px, 3vh, 28px);   /* sits between the number and the title */
+    }
+    .ws-title { font-size: clamp(24px, 6.6vw, 34px); }
+    .ws-desc { font-size: 14px; line-height: 1.5; }
+    /* whole card becomes the tap target — stretch the (now invisible) CTA link over it */
+    .ws-cta {
+      position: absolute;
+      inset: 0;
+      width: auto; height: auto;   /* override base width:fit-content so inset:0 stretches it */
+      z-index: 5;
+      margin: 0; padding: 0;
+      border: 0; background: none;
+      font-size: 0; color: transparent;
+    }
+    .ws-cta::after, .ws-cta .ar { display: none; }
+    /* visible pressed state on tap */
+    .ws-card-inner:active { transform: scale(0.975); border-color: rgba(240, 237, 232, 0.4); }
   }
   @media (prefers-reduced-motion: reduce) {
     .ws-card {
@@ -991,23 +1062,7 @@
     padding: clamp(22px, 2vw, 30px);
     background: var(--surface);
     overflow: hidden;
-    transition: border-color 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
   }
-  /* thin gold accent that grows across the top on hover */
-  .exp-card::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 0;
-    height: 2px; width: 0;
-    background: var(--gold);
-    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .exp-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(240, 237, 232, 0.26);
-    background: rgba(200, 184, 154, 0.03);
-  }
-  .exp-card:hover::before { width: 100%; }
   .exp-card-top {
     display: flex;
     align-items: center;
@@ -1023,12 +1078,10 @@
     border-radius: 10px;
     overflow: hidden;
     background: var(--bg);
-    transition: border-color 0.4s ease;
   }
   .exp-logo image-slot { width: 100%; height: 100%; display: block; }
   /* icon-only empty state (zero out the caption/sub text; svg keeps its fixed size) */
   .exp-logo image-slot::part(empty) { font-size: 0; padding: 0; gap: 0; }
-  .exp-card:hover .exp-logo { border-color: rgba(240, 237, 232, 0.26); }
   .exp-type {
     font-family: var(--mono);
     font-size: 10.5px;
@@ -1064,10 +1117,11 @@
   .contact h2 {
     font-family: var(--serif);
     font-weight: 300;
-    font-size: clamp(40px, 8vw, 128px);
-    line-height: 0.98;
+    /* scales down on small screens so each forced line stays on one line (2 lines total everywhere) */
+    font-size: min(6.2vw, 42px) !important;
+    line-height: 1.1;
     letter-spacing: -0.01em;
-    max-width: 16ch;
+    max-width: none;
     margin: 0 auto;
   }
   .contact-email {
@@ -1183,6 +1237,49 @@
     color: var(--muted);
   }
 
+  /* dots — only shown for the mobile carousel */
+  .tst-dots { display: none; }
+
+  /* ===== Testimonials — mobile auto-swipe carousel (one card at a time) ===== */
+  @media (max-width: 820px) {
+    .tst-marquee {
+      overflow: hidden;
+      -webkit-mask-image: none;
+              mask-image: none;
+    }
+    .tst-track.tst-carousel {
+      animation: none;
+      width: auto;
+      gap: 0;
+      padding: 8px 0;
+      transform: translateX(0);
+      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tst-slide {
+      flex: 0 0 100%;
+      display: flex;
+      box-sizing: border-box;
+      padding: 0 var(--gutter);
+    }
+    .tst-slide .tcard { width: 100%; }
+    .tst-dots {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+      margin-top: clamp(26px, 4vh, 40px);
+      padding: 0 var(--gutter);
+    }
+    .tst-dot {
+      width: 8px; height: 8px;
+      padding: 0; border: 0;
+      border-radius: 50%;
+      background: rgba(240, 237, 232, 0.24);
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .tst-dot.on { background: var(--gold); transform: scale(1.15); }
+  }
+
   /* ===== FOOTER ===== */
   footer {
     display: flex;
@@ -1238,6 +1335,8 @@
   @media (max-width: 1080px) {
     .about-grid { grid-template-columns: 1fr; gap: 54px; }
     .about-right, .about-left { grid-column: 1; grid-row: auto; }
+    .about-right { order: -1; }   /* image first, right after the "About me" header */
+    .about-left { order: 0; }
     .about-orbit { max-width: 440px; }
     .about-visual { max-width: 460px; }
     .sc-curiosity { right: 0; }
@@ -1254,12 +1353,36 @@
   }
   @media (max-width: 560px) {
     .nav-logo svg { height: 17px; }
-    .nav-links { display: none; }
+    .nav-toggle { display: flex; }
+    /* full-screen overlay menu */
+    .nav-links {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      background: rgba(13, 13, 13, 0.97);
+      backdrop-filter: blur(20px) saturate(120%);
+      -webkit-backdrop-filter: blur(20px) saturate(120%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .nav-links a { font-size: 17px; letter-spacing: 0.18em; padding-bottom: 5px; }
+    nav.menu-open .nav-links { opacity: 1; pointer-events: auto; }
     .scroll-tag { display: none; }
     .hero-sat { opacity: 0.32; right: -34%; top: 24%; }
+    #heroTitle { font-size: clamp(40px, 12.5vw, 58px) !important; line-height: 1.1 !important; overflow-wrap: normal; }
     .stats { grid-template-columns: 1fr 1fr; }
     .ws-tags span { font-size: 10px; padding: 5px 12px; }
     .exp-grid { grid-template-columns: 1fr; }
+    .ws-more-grid { grid-template-columns: 1fr; }
+    .tcard { width: min(80vw, 340px); padding: 28px 26px 26px; }
+    section.block { padding-top: clamp(58px, 9vh, 88px); padding-bottom: clamp(58px, 9vh, 88px); }
+    .tst { padding: clamp(54px, 8vh, 80px) 0; }
+    .contact { padding-top: clamp(80px, 13vh, 140px); padding-bottom: clamp(80px, 13vh, 140px); }
   }
 
   /* Hide the system cursor on mouse devices so only the custom cursor shows */
@@ -1331,12 +1454,16 @@
   <!-- NAV -->
   <nav id="nav">
     <a href="#top" class="nav-logo" aria-label="Sanbarto Mondal — home" data-cursor><svg viewBox="0 0 257 121" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M104.604 92.748C110.396 92.7482 115.903 95.2593 119.701 99.6309L138.269 121H0L18.5674 99.6309C22.3659 95.2591 27.8736 92.748 33.665 92.748H104.604ZM161.922 27.2217C165.083 30.8604 166.824 35.5185 166.824 40.3389V121H138.269V76.1855H41.5811C17.0333 76.1855 7.01368 51.786 7.01367 37.3457C7.01367 22.9054 17.0333 0 41.5811 0H138.269L161.922 27.2217ZM207.01 27.2217C210.171 30.8604 211.912 35.5186 211.912 40.3389V121H183.356V0L207.01 27.2217ZM252.097 27.2217C255.258 30.8604 257 35.5185 257 40.3389V121H228.444V0L252.097 27.2217ZM119.586 21.501C115.787 25.8727 110.28 28.3828 104.488 28.3828H41.5791C37.5713 28.3828 35.0664 33.8603 35.0664 38.3418C35.0665 42.8232 37.5714 47.3047 41.5791 47.3047H138.268V0L119.586 21.501Z"></path></svg></a>
-    <div class="nav-links">
+    <div class="nav-links" id="navLinks">
       <a href="#work" data-cursor>Work</a>
       <a href="/about" data-cursor>About</a>
       <a href="#experience" data-cursor>Experience</a>
       <a href="#contact" data-cursor>Contact</a>
+      <a class="nav-resume" href="https://drive.google.com/file/d/1BQLLxbjrGHyPH_8HjdCTc_9Wc_pFpzo5/view?usp=sharing" target="_blank" rel="noopener" data-cursor>Resume <span class="ar">↗</span></a>
     </div>
+    <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks" data-cursor>
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
   <!-- HERO -->
@@ -1380,7 +1507,7 @@
             <span class="ws-index">Project 01</span>
             <span class="ws-title">CheQ — Illustration Library</span>
             <div class="ws-sub">Illustration Set · 2025</div>
-            <p class="ws-desc">A cohesive illustration system that gives CheQ's product a warm, human voice — built to flex across screens, onboarding, and campaigns.</p>
+            <p class="ws-desc">A cohesive illustration system that gives CheQ's product a warm, human voice, built to flex across screens, onboarding, and campaigns.</p>
             <div class="ws-tags"><span>Branding</span><span>UI</span></div>
             <a class="ws-cta" href="/cheq-illustration-library" data-cursor>View project <span class="ar">↗</span></a>
           </div>
@@ -1395,8 +1522,8 @@
           <div class="ws-meta">
             <span class="ws-index">Project 02</span>
             <span class="ws-title">Aurva — Brand Identity</span>
-            <div class="ws-sub">Graphic Design · 2025 – 2026</div>
-            <p class="ws-desc">A confident brand identity for a data-security company — a distinctive mark, a flexible visual system, and marketing built to scale with the team.</p>
+            <div class="ws-sub">Graphic Design · 2025-2026</div>
+            <p class="ws-desc">A confident brand identity for a data-security company, with a distinctive mark, a flexible visual system, and marketing built to scale with the team.</p>
             <div class="ws-tags"><span>Branding</span><span>Marketing</span></div>
             <a class="ws-cta" href="/aurva-brand-identity" data-cursor>View project <span class="ar">↗</span></a>
           </div>
@@ -1412,7 +1539,7 @@
             <span class="ws-index">Project 03</span>
             <span class="ws-title">100kmph — Apparel Design</span>
             <div class="ws-sub">Fashion Graphics · 2024</div>
-            <p class="ws-desc">Apparel graphics for a motorsport-inspired label — translating speed, grit, and adrenaline into bold, wearable design.</p>
+            <p class="ws-desc">Apparel graphics for a motorsport-inspired label, translating speed, grit, and adrenaline into bold, wearable design.</p>
             <div class="ws-tags"><span>Merchandise</span><span>Marketing</span></div>
             <a class="ws-cta" href="/100kmph-apparel-design" data-cursor>View project <span class="ar">↗</span></a>
           </div>
@@ -1428,7 +1555,7 @@
             <span class="ws-index">Project 04</span>
             <span class="ws-title">Dusk — Comic Book Design</span>
             <div class="ws-sub">Illustration · 2024</div>
-            <p class="ws-desc">A self-made comic — characters, panels, and a moody world drawn from scratch, where illustration meets sequential storytelling.</p>
+            <p class="ws-desc">A self-made comic with characters, panels, and a moody world drawn from scratch, where illustration meets sequential storytelling.</p>
             <div class="ws-tags"><span>Drawing</span><span>Storytelling</span></div>
             <a class="ws-cta" href="/dusk-comic-book-design" data-cursor>View project <span class="ar">↗</span></a>
           </div>
@@ -1444,7 +1571,7 @@
             <span class="ws-index">Project 05</span>
             <span class="ws-title">Cadence — Dance Club Identity</span>
             <div class="ws-sub">Branding · 2025</div>
-            <p class="ws-desc">Brand identity for a college dance club — an energetic mark and visual system built to move with the rhythm of the stage.</p>
+            <p class="ws-desc">Brand identity for a college dance club, with an energetic mark and visual system built to move with the rhythm of the stage.</p>
             <div class="ws-tags"><span>Identity</span><span>Logo</span></div>
             <a class="ws-cta" href="/cadence-dance-club-identity" data-cursor>View project <span class="ar">↗</span></a>
           </div>
@@ -1465,7 +1592,7 @@
             <span class="ws-mcard-badge">↗</span>
           </div>
           <div class="ws-mcard-title">Graphic Design Compilation</div>
-          <div class="ws-mcard-sub">Graphics · 2022 – 2025</div>
+          <div class="ws-mcard-sub">Graphics · 2022-2025</div>
         </a>
         <a class="ws-mcard reveal" href="/decathlon-sticker-design" data-cursor style="--rd: 0.08s">
           <div class="ws-mcard-thumb">
@@ -1657,13 +1784,12 @@
 
   <!-- CONTACT -->
   <section class="contact" id="contact" data-screen-label="Contact">
-    <h2 class="reveal" style="font-family: Montserrat; font-weight: 500; font-size: 42px; line-height: 1.1">Let's make something <span class="ital">together</span></h2>
+    <h2 class="reveal" style="font-family: Montserrat; font-weight: 500; font-size: 42px; line-height: 1.1">Let's build something<br><span class="ital">worth remembering.</span></h2>
     <div class="contact-links reveal">
       <a href="mailto:mondaliitian@gmail.com" data-cursor>Email</a>
       <a href="https://www.linkedin.com/in/sanbarto-mondal-245249259/" target="_blank" rel="noopener" data-cursor>LinkedIn</a>
       <a href="https://www.behance.net/sanbartomondal" target="_blank" rel="noopener" data-cursor>Behance</a>
       <a href="https://www.instagram.com/sanb_art_0/" target="_blank" rel="noopener" data-cursor>Instagram</a>
-      <a href="https://drive.google.com/file/d/1BQLLxbjrGHyPH_8HjdCTc_9Wc_pFpzo5/view?usp=sharing" target="_blank" rel="noopener" data-cursor>Resume ↗</a>
     </div>
   </section>
 
@@ -1734,18 +1860,92 @@
     track.innerHTML = unit + unit;
   })();
 
-  // ===== Testimonials — duplicate cards for seamless marquee =====
+  // ===== Testimonials — marquee on desktop, auto-swipe carousel on mobile =====
   (function () {
     const track = document.getElementById("tstTrack");
     if (!track) return;
-    // Clone the original set once; clones keep the same image-slot ids so a
-    // dropped photo stays in sync across both halves of the loop.
-    const originals = Array.prototype.slice.call(track.children);
-    originals.forEach(function (card) {
-      const clone = card.cloneNode(true);
-      clone.setAttribute("aria-hidden", "true");
-      track.appendChild(clone);
-    });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (window.matchMedia("(max-width: 820px)").matches) {
+      buildCarousel();
+    } else {
+      cloneForMarquee();
+    }
+
+    // desktop: clone the set once for a seamless marquee loop
+    function cloneForMarquee() {
+      Array.prototype.slice.call(track.children).forEach(function (card) {
+        const clone = card.cloneNode(true);
+        clone.setAttribute("aria-hidden", "true");
+        track.appendChild(clone);
+      });
+    }
+
+    // mobile: one card in view at a time, auto-advancing every 7s with a slide
+    function buildCarousel() {
+      const cards = Array.prototype.slice.call(track.children);
+      const n = cards.length;
+      if (!n) return;
+      track.classList.add("tst-carousel");
+
+      // wrap each card in a full-width slide
+      cards.forEach(function (card) {
+        const slide = document.createElement("div");
+        slide.className = "tst-slide";
+        track.insertBefore(slide, card);
+        slide.appendChild(card);
+      });
+      // clone the first slide at the end for a seamless forward loop
+      const firstClone = track.children[0].cloneNode(true);
+      firstClone.setAttribute("aria-hidden", "true");
+      track.appendChild(firstClone);
+
+      // pagination dots (one per real card)
+      const dots = document.createElement("div");
+      dots.className = "tst-dots";
+      for (let i = 0; i < n; i++) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "tst-dot";
+        b.setAttribute("aria-label", "Show testimonial " + (i + 1));
+        dots.appendChild(b);
+      }
+      track.parentElement.parentElement.appendChild(dots);
+      const dotEls = Array.prototype.slice.call(dots.children);
+
+      let idx = 0, timer = null, snapping = false;
+      const EASE = "transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)";
+      function slideW() { return track.parentElement.clientWidth; }
+      function place(animate) {
+        track.style.transition = animate ? EASE : "none";
+        track.style.transform = "translateX(" + (-idx * slideW()) + "px)";
+      }
+      function setDot(active) { dotEls.forEach(function (d, j) { d.classList.toggle("on", j === active); }); }
+      function next() {
+        idx++;
+        place(true);
+        setDot(idx % n);
+        if (idx === n) {                 // reached the cloned first card → snap back to real first
+          snapping = true;
+          window.setTimeout(function () {
+            idx = 0;
+            place(false);
+            void track.offsetWidth;      // flush so the next move animates
+            snapping = false;
+          }, 720);
+        }
+      }
+      function start() { if (reduce) return; stop(); timer = window.setInterval(next, 7000); }
+      function stop() { if (timer) { window.clearInterval(timer); timer = null; } }
+      function goTo(j) { if (snapping) return; idx = j; place(true); setDot(j); start(); }
+
+      dotEls.forEach(function (d, j) { d.addEventListener("click", function () { goTo(j); }); });
+      window.addEventListener("resize", function () { if (!snapping) place(false); }, { passive: true });
+
+      place(false);
+      setDot(0);
+      start();
+    }
   })();
 
   // ===== About — coordinated entrance (text rise + image glitch) when section enters view =====
@@ -1790,6 +1990,29 @@
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+
+  // ===== Mobile hamburger menu =====
+  (function () {
+    const toggle = document.getElementById("navToggle");
+    const links = document.getElementById("navLinks");
+    if (!toggle || !links) return;
+    function setOpen(open) {
+      nav.classList.toggle("menu-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      document.body.style.overflow = open ? "hidden" : "";
+    }
+    toggle.addEventListener("click", function () {
+      setOpen(!nav.classList.contains("menu-open"));
+    });
+    // close when a link is tapped or Escape is pressed
+    links.addEventListener("click", function (e) {
+      if (e.target.closest("a")) setOpen(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.classList.contains("menu-open")) setOpen(false);
+    });
+  })();
 
   // ===== Reveal on scroll =====
   const reveals = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
@@ -1861,15 +2084,27 @@
     if (!title || !hero) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // wrap every character in a .h1-char span, preserving the .ital wrapper
+    // wrap every character in a .h1-char span, but group chars into per-word
+    // wrappers (.h1-word, white-space:nowrap) so words never break mid-word —
+    // line breaks happen only at the spaces between words.
     function splitNode(node, dest) {
       node.childNodes.forEach(function (child) {
         if (child.nodeType === 3) {
-          child.textContent.split("").forEach(function (ch) {
-            const s = document.createElement("span");
-            s.className = "h1-char";
-            s.textContent = ch;
-            dest.appendChild(s);
+          child.textContent.split(/(\s+)/).forEach(function (token) {
+            if (token === "") return;
+            if (/^\s+$/.test(token)) {
+              dest.appendChild(document.createTextNode(token)); // keep break opportunity
+              return;
+            }
+            const word = document.createElement("span");
+            word.className = "h1-word";
+            token.split("").forEach(function (ch) {
+              const s = document.createElement("span");
+              s.className = "h1-char";
+              s.textContent = ch;
+              word.appendChild(s);
+            });
+            dest.appendChild(word);
           });
         } else if (child.nodeType === 1) {
           const clone = child.cloneNode(false); // keep tag + classes (e.g. .ital)
@@ -1970,8 +2205,14 @@
 
     function onMove(e) {
       const r = hero.getBoundingClientRect();
-      const nx = (e.clientX - r.left) / r.width - 0.5;   // -0.5..0.5
-      const ny = (e.clientY - r.top) / r.height - 0.5;
+      // ignore moves while the hero is scrolled off-screen — otherwise a negative
+      // rect.top inflates ny into a huge rotateX that foreshortens ("squeezes") the satellite
+      if (r.bottom <= 0 || r.top >= window.innerHeight) return;
+      let nx = (e.clientX - r.left) / r.width - 0.5;     // -0.5..0.5
+      let ny = (e.clientY - r.top) / r.height - 0.5;
+      // clamp so a cursor outside the hero bounds can't over-rotate the tilt
+      nx = nx < -0.5 ? -0.5 : nx > 0.5 ? 0.5 : nx;
+      ny = ny < -0.5 ? -0.5 : ny > 0.5 ? 0.5 : ny;
       tx = nx * 46;            // px drift
       ty = ny * 34;
       try_ = nx * 11;          // rotateY (deg)
@@ -1995,10 +2236,38 @@
     window.addEventListener("mousemove", onMove, { passive: true });
   })();
 
+  // ===== WORK — mobile card layout: move the thumbnail directly under the project number =====
+  // Desktop keeps the two-column layout (visual in the right column).
+  (function () {
+    const mq = window.matchMedia("(max-width: 820px)");
+    const cards = Array.prototype.slice.call(document.querySelectorAll(".ws-card"));
+    if (!cards.length) return;
+    function applyLayout() {
+      const mobile = mq.matches;
+      cards.forEach(function (card) {
+        const inner = card.querySelector(".ws-card-inner");
+        const meta = card.querySelector(".ws-meta");
+        const index = card.querySelector(".ws-index");
+        const visual = card.querySelector(".ws-visual");
+        if (!inner || !meta || !index || !visual) return;
+        if (mobile) {
+          // place the thumbnail right after the "PROJECT 0N" label, inside the meta column
+          if (visual.parentElement !== meta) index.insertAdjacentElement("afterend", visual);
+        } else {
+          // restore: visual back as the second grid column
+          if (visual.parentElement !== inner) inner.appendChild(visual);
+        }
+      });
+    }
+    mq.addEventListener("change", applyLayout);
+    applyLayout();
+  })();
+
   // ===== WORK — vertical stacking cards (covered cards recede with a slight scale; stay fully opaque) =====
+  // Runs on every width — the sticky overlap is the same on mobile and desktop.
+  // Reduced-motion users fall back to the static column (handled in CSS), so we skip painting there.
   (function () {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mqStack = window.matchMedia("(min-width: 821px)");
     const cards = Array.prototype.slice.call(document.querySelectorAll(".ws-card"));
     if (!cards.length) return;
 
@@ -2009,7 +2278,7 @@
     let ticking = false;
     function update() {
       ticking = false;
-      if (reduce || !mqStack.matches) { reset(); return; }
+      if (reduce) { reset(); return; }
       const vh = window.innerHeight;
       for (let i = 0; i < cards.length; i++) {
         const next = cards[i + 1];
@@ -2028,7 +2297,6 @@
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
-    mqStack.addEventListener("change", onScroll);
     update();
   })();
 </script>
@@ -2291,7 +2559,7 @@
   const params = window.__heroDrift = { on: true, density: 1 };
 
   // real rock cutouts (transparent PNG) used as the floating space stones
-  const ROCK_SRC = ["rocks/A1.png", "rocks/A2.png", "rocks/A3.png"];
+  const ROCK_SRC = ["uploads/A1.png", "uploads/A2.png", "uploads/A3.png"];
   const ROCKS = ROCK_SRC.map(function (s) { const im = new Image(); im.src = s; return im; });
 
   let W = 1, H = 1;
