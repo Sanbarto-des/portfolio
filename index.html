@@ -171,18 +171,64 @@
     padding-bottom: 16px;
   }
   .nav-logo {
+    position: relative;
     display: inline-flex;
     align-items: center;
+    height: 22px;
     color: var(--fg);
     transition: color 0.3s ease, opacity 0.3s ease;
   }
-  .nav-logo svg {
-    display: block;
-    height: 20px;
-    width: auto;
-  }
-  .nav-logo svg path { fill: currentColor; transition: fill 0.3s ease; }
   .nav-logo:hover { color: var(--gold); }
+  /* monogram mark — overlaps the name, toggled by the switch animation */
+  .nav-logo-mark {
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.25s ease;
+  }
+  .nav-logo-mark svg { display: block; height: 20px; width: auto; }
+  .nav-logo-mark svg path { fill: currentColor; transition: fill 0.3s ease; }
+  /* name text — defines the logo's width so the swap causes no layout shift */
+  .nav-logo-name {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: currentColor;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  /* state toggles */
+  .nav-logo.show-name .nav-logo-mark { opacity: 0; }
+  .nav-logo.show-name .nav-logo-name { opacity: 1; }
+  /* techy glitch burst applied during the swap */
+  .nav-logo .glitch {
+    animation: navGlitch 0.36s steps(2, end) 1 both;
+  }
+  @keyframes navGlitch {
+    0%   { clip-path: inset(0 0 0 0); transform: translateY(-50%) translateX(0); filter: none; }
+    25%  { clip-path: inset(18% 0 52% 0); transform: translateY(-50%) translateX(-2px); filter: drop-shadow(2px 0 0 rgba(120,210,255,0.8)) drop-shadow(-2px 0 0 rgba(255,90,130,0.8)); }
+    50%  { clip-path: inset(58% 0 14% 0); transform: translateY(-50%) translateX(2px); filter: drop-shadow(-2px 0 0 rgba(120,210,255,0.8)) drop-shadow(2px 0 0 rgba(255,90,130,0.8)); }
+    75%  { clip-path: inset(8% 0 70% 0); transform: translateY(-50%) translateX(-1px); filter: none; }
+    100% { clip-path: inset(0 0 0 0); transform: translateY(-50%) translateX(0); filter: none; }
+  }
+  /* the name has no translateY (it's the in-flow element) — glitch without vertical offset */
+  .nav-logo-name.glitch { animation-name: navGlitchFlat; }
+  @keyframes navGlitchFlat {
+    0%   { clip-path: inset(0 0 0 0); transform: translateX(0); filter: none; }
+    25%  { clip-path: inset(18% 0 52% 0); transform: translateX(-2px); filter: drop-shadow(2px 0 0 rgba(120,210,255,0.8)) drop-shadow(-2px 0 0 rgba(255,90,130,0.8)); }
+    50%  { clip-path: inset(58% 0 14% 0); transform: translateX(2px); filter: drop-shadow(-2px 0 0 rgba(120,210,255,0.8)) drop-shadow(2px 0 0 rgba(255,90,130,0.8)); }
+    75%  { clip-path: inset(8% 0 70% 0); transform: translateX(-1px); filter: none; }
+    100% { clip-path: inset(0 0 0 0); transform: translateX(0); filter: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-logo .glitch { animation: none; }
+  }
   .nav-links {
     display: flex;
     gap: clamp(22px, 3vw, 44px);
@@ -447,7 +493,8 @@
   }
   .ticker-track {
     display: inline-flex;
-    gap: 0;
+    align-items: center;
+    gap: clamp(22px, 3vw, 44px);   /* uniform spacing → dots equidistant from words */
     animation: marquee 28s linear infinite;
     will-change: transform;
   }
@@ -456,12 +503,11 @@
     font-family: "Montserrat", sans-serif;
     font-size: 20px;
     font-weight: 500;
-    padding: 0 clamp(22px, 3vw, 44px);
     display: inline-flex;
     align-items: center;
     color: var(--fg);
   }
-  .ticker-track .star { color: var(--gold); font-size: 0.5em; }
+  .ticker-track .star { color: var(--gold); font-size: 10px; }
   @keyframes marquee {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
@@ -567,6 +613,11 @@
     width: 100%;
     max-width: 560px;
     margin: 0 auto;
+    /* cursor parallax tilt (set via JS), mirrors the hero satellite */
+    --amx: 0px; --amy: 0px; --arx: 0deg; --ary: 0deg;
+    transform: translate3d(var(--amx), var(--amy), 0) perspective(1400px) rotateX(var(--arx)) rotateY(var(--ary));
+    transform-style: preserve-3d;
+    will-change: transform;
   }
   .about-visual img {
     display: block;
@@ -1453,7 +1504,7 @@
 
   <!-- NAV -->
   <nav id="nav">
-    <a href="#top" class="nav-logo" aria-label="Sanbarto Mondal — home" data-cursor><svg viewBox="0 0 257 121" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M104.604 92.748C110.396 92.7482 115.903 95.2593 119.701 99.6309L138.269 121H0L18.5674 99.6309C22.3659 95.2591 27.8736 92.748 33.665 92.748H104.604ZM161.922 27.2217C165.083 30.8604 166.824 35.5185 166.824 40.3389V121H138.269V76.1855H41.5811C17.0333 76.1855 7.01368 51.786 7.01367 37.3457C7.01367 22.9054 17.0333 0 41.5811 0H138.269L161.922 27.2217ZM207.01 27.2217C210.171 30.8604 211.912 35.5186 211.912 40.3389V121H183.356V0L207.01 27.2217ZM252.097 27.2217C255.258 30.8604 257 35.5185 257 40.3389V121H228.444V0L252.097 27.2217ZM119.586 21.501C115.787 25.8727 110.28 28.3828 104.488 28.3828H41.5791C37.5713 28.3828 35.0664 33.8603 35.0664 38.3418C35.0665 42.8232 37.5714 47.3047 41.5791 47.3047H138.268V0L119.586 21.501Z"></path></svg></a>
+    <a href="#top" class="nav-logo" id="navLogo" aria-label="Sanbarto Mondal — home" data-cursor><span class="nav-logo-mark"><svg viewBox="0 0 257 121" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M104.604 92.748C110.396 92.7482 115.903 95.2593 119.701 99.6309L138.269 121H0L18.5674 99.6309C22.3659 95.2591 27.8736 92.748 33.665 92.748H104.604ZM161.922 27.2217C165.083 30.8604 166.824 35.5185 166.824 40.3389V121H138.269V76.1855H41.5811C17.0333 76.1855 7.01368 51.786 7.01367 37.3457C7.01367 22.9054 17.0333 0 41.5811 0H138.269L161.922 27.2217ZM207.01 27.2217C210.171 30.8604 211.912 35.5186 211.912 40.3389V121H183.356V0L207.01 27.2217ZM252.097 27.2217C255.258 30.8604 257 35.5185 257 40.3389V121H228.444V0L252.097 27.2217ZM119.586 21.501C115.787 25.8727 110.28 28.3828 104.488 28.3828H41.5791C37.5713 28.3828 35.0664 33.8603 35.0664 38.3418C35.0665 42.8232 37.5714 47.3047 41.5791 47.3047H138.268V0L119.586 21.501Z"></path></svg></span><span class="nav-logo-name" aria-hidden="true">Sanbarto Mondal</span></a>
     <div class="nav-links" id="navLinks">
       <a href="#work" data-cursor>Work</a>
       <a href="/about" data-cursor>About</a>
@@ -1854,7 +1905,8 @@
     const track = document.getElementById("tickerTrack");
     let unit = "";
     items.forEach(function (it) {
-      unit += '<span>' + it + '<span class="star" style="margin-left:0.9em">✦</span></span>';
+      // word and star are siblings so the flex `gap` spaces them equally (dot stays centered between words)
+      unit += '<span class="tk-word">' + it + '</span><span class="star">✦</span>';
     });
     // duplicate for seamless loop (translateX -50%)
     track.innerHTML = unit + unit;
@@ -2012,6 +2064,54 @@
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && nav.classList.contains("menu-open")) setOpen(false);
     });
+  })();
+
+  // ===== Nav logo — techy switch between the monogram and the name =====
+  (function () {
+    const logo = document.getElementById("navLogo");
+    if (!logo) return;
+    const mark = logo.querySelector(".nav-logo-mark");
+    const nameEl = logo.querySelector(".nav-logo-name");
+    if (!mark || !nameEl) return;
+    const NAME = nameEl.textContent.trim();
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;   // keep the static monogram for reduced motion
+
+    const CHARS = "ABCDEFGHKMNPRSTUVWXYZ#%&/<>*0123456789";
+    let scrambleRaf = 0, showingName = false, paused = false;
+
+    function glitch(el) {
+      el.classList.remove("glitch");
+      void el.offsetWidth;          // restart the keyframe
+      el.classList.add("glitch");
+    }
+    function scrambleIn(text, dur) {
+      cancelAnimationFrame(scrambleRaf);
+      const start = performance.now(), n = text.length;
+      (function frame(now) {
+        const p = Math.min(1, (now - start) / dur);
+        const revealed = Math.floor(p * n);
+        let out = "";
+        for (let i = 0; i < n; i++) {
+          const ch = text[i];
+          out += ch === " " ? " " : (i < revealed ? ch : CHARS[(Math.random() * CHARS.length) | 0]);
+        }
+        nameEl.textContent = out;
+        if (p < 1) scrambleRaf = requestAnimationFrame(frame);
+        else nameEl.textContent = text;
+      })(start);
+    }
+    function toName() { showingName = true;  logo.classList.add("show-name");    glitch(nameEl); scrambleIn(NAME, 620); }
+    function toMark() { showingName = false; logo.classList.remove("show-name"); glitch(mark); }
+
+    window.setInterval(function () {
+      if (paused) return;
+      if (showingName) toMark(); else toName();
+    }, 3600);
+
+    // freeze the cycle while hovered so it's easy to click
+    logo.addEventListener("mouseenter", function () { paused = true; });
+    logo.addEventListener("mouseleave", function () { paused = false; });
   })();
 
   // ===== Reveal on scroll =====
@@ -2231,6 +2331,45 @@
       sat.style.setProperty("--ry", cry.toFixed(2) + "deg");
       if (Math.abs(tx - cx) + Math.abs(ty - cy) + Math.abs(trx - crx) + Math.abs(try_ - cry) > 0.02) {
         raf = requestAnimationFrame(loop);
+      } else { active = false; }
+    }
+    window.addEventListener("mousemove", onMove, { passive: true });
+  })();
+
+  // ===== About portrait — cursor parallax tilt (mirrors the hero satellite) =====
+  (function () {
+    const vis = document.getElementById("aboutVisual");
+    if (!vis) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const ref = document.getElementById("about");
+    if (!ref) return;
+    let tx = 0, ty = 0, trx = 0, try_ = 0;   // targets
+    let cx = 0, cy = 0, crx = 0, cry = 0;     // current (eased)
+    let active = false;
+
+    function onMove(e) {
+      const r = ref.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= window.innerHeight) return;  // section off-screen
+      let nx = (e.clientX - r.left) / r.width - 0.5;
+      let ny = (e.clientY - r.top) / r.height - 0.5;
+      nx = nx < -0.5 ? -0.5 : nx > 0.5 ? 0.5 : nx;   // clamp so it never over-rotates
+      ny = ny < -0.5 ? -0.5 : ny > 0.5 ? 0.5 : ny;
+      tx = nx * 24;            // px drift (gentler than hero)
+      ty = ny * 18;
+      try_ = nx * 7;           // rotateY (deg)
+      trx = -ny * 5.5;         // rotateX (deg)
+      if (!active) { active = true; loop(); }
+    }
+    function loop() {
+      const E = 0.05;
+      cx += (tx - cx) * E; cy += (ty - cy) * E; crx += (trx - crx) * E; cry += (try_ - cry) * E;
+      vis.style.setProperty("--amx", cx.toFixed(2) + "px");
+      vis.style.setProperty("--amy", cy.toFixed(2) + "px");
+      vis.style.setProperty("--arx", crx.toFixed(2) + "deg");
+      vis.style.setProperty("--ary", cry.toFixed(2) + "deg");
+      if (Math.abs(tx - cx) + Math.abs(ty - cy) + Math.abs(trx - crx) + Math.abs(try_ - cry) > 0.02) {
+        requestAnimationFrame(loop);
       } else { active = false; }
     }
     window.addEventListener("mousemove", onMove, { passive: true });
