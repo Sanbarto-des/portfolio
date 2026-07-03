@@ -580,31 +580,41 @@
     color: var(--muted);
     text-transform: uppercase;
   }
-  .pills {
+  .skill-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 16px;
+    gap: clamp(16px, 1.7vw, 22px);
+    margin-top: 20px;
   }
   .about-skills-label {
     display: block;
     margin-top: 44px;
   }
-  .pill {
+  /* square frame for a software logo (drop an image to fill) */
+  .skill-box {
+    flex: 0 0 auto;
+    width: clamp(46px, 4.6vw, 58px);
+    aspect-ratio: 1;
     border: 1px solid var(--line);
-    border-radius: 100px;
-    padding: 9px 18px;
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    color: var(--fg);
-    transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
-    cursor: default;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--surface);
+    transition: border-color 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .pill:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-    background: rgba(200, 184, 154, 0.05);
+  .skill-box image-slot {
+    width: 100%; height: 100%; display: block;
+    /* dial down the loud brand colors so the row reads calmly on the dark UI */
+    filter: saturate(0.62) brightness(0.82);
+    opacity: 0.82;
+    transition: filter 0.35s ease, opacity 0.35s ease;
   }
+  /* icon-only empty state (hide the caption/sub text; svg keeps its size) */
+  .skill-box image-slot::part(empty) { font-size: 0; padding: 0; gap: 0; }
+  .skill-box:hover {
+    border-color: rgba(240, 237, 232, 0.34);
+    transform: translateY(-3px);
+  }
+  .skill-box:hover image-slot { filter: none; opacity: 1; }   /* full color on hover */
 
   /* ===== ABOUT — orbital portrait composition ===== */
   .about-right { position: relative; }
@@ -704,20 +714,22 @@
   .about-left h2 .ital,
   .about-left > p,
   .about-left .about-skills-label,
-  .about-left .pill { opacity: 0; }
+  .about-left .skill-box { opacity: 0; }
   .about-left.in-view h2 .h2-lead { animation: aboutRise 0.9s cubic-bezier(0.16,1,0.3,1) 0.05s both; }
   .about-left.in-view h2 .ital    { animation: aboutRise 0.9s cubic-bezier(0.16,1,0.3,1) 0.20s both; }
   .about-left.in-view > p         { animation: aboutRise 0.95s cubic-bezier(0.16,1,0.3,1) 0.34s both; }
   .about-left.in-view .about-skills-label { animation: aboutRise 0.8s cubic-bezier(0.16,1,0.3,1) 0.48s both; }
-  .about-left.in-view .pill { animation: pillRise 0.55s cubic-bezier(0.34,1.56,0.64,1) both; }
-  .about-left.in-view .pill:nth-child(1) { animation-delay: 0.56s; }
-  .about-left.in-view .pill:nth-child(2) { animation-delay: 0.62s; }
-  .about-left.in-view .pill:nth-child(3) { animation-delay: 0.68s; }
-  .about-left.in-view .pill:nth-child(4) { animation-delay: 0.74s; }
-  .about-left.in-view .pill:nth-child(5) { animation-delay: 0.80s; }
-  .about-left.in-view .pill:nth-child(6) { animation-delay: 0.86s; }
-  .about-left.in-view .pill:nth-child(7) { animation-delay: 0.92s; }
-  .about-left.in-view .pill:nth-child(8) { animation-delay: 0.98s; }
+  .about-left.in-view .skill-box { animation: pillRise 0.55s cubic-bezier(0.34,1.56,0.64,1) both; }
+  .about-left.in-view .skill-box:nth-child(1) { animation-delay: 0.56s; }
+  .about-left.in-view .skill-box:nth-child(2) { animation-delay: 0.62s; }
+  .about-left.in-view .skill-box:nth-child(3) { animation-delay: 0.68s; }
+  .about-left.in-view .skill-box:nth-child(4) { animation-delay: 0.74s; }
+  .about-left.in-view .skill-box:nth-child(5) { animation-delay: 0.80s; }
+  .about-left.in-view .skill-box:nth-child(6) { animation-delay: 0.86s; }
+  .about-left.in-view .skill-box:nth-child(7) { animation-delay: 0.92s; }
+  .about-left.in-view .skill-box:nth-child(8) { animation-delay: 0.98s; }
+  .about-left.in-view .skill-box:nth-child(9) { animation-delay: 1.04s; }
+  .about-left.in-view .skill-box:nth-child(10) { animation-delay: 1.10s; }
   @keyframes aboutRise {
     from { opacity: 0; transform: translateY(30px); filter: blur(7px); }
     to   { opacity: 1; transform: none; filter: blur(0); }
@@ -845,7 +857,7 @@
     .about-left h2 .ital,
     .about-left > p,
     .about-left .about-skills-label,
-    .about-left .pill { opacity: 1; animation: none; }
+    .about-left .skill-box { opacity: 1; animation: none; }
   }
 
   /* ===== WORK — vertical stacking cards ===== */
@@ -1673,15 +1685,17 @@
         <h2 style="font-family: Montserrat; font-weight: 500"><span class="h2-lead">Hi, I'm </span><span class="ital">Sanbarto</span></h2>
         <p style="width: 420px; max-width: 100%">I am a Visual Designer passionate about crafting meaningful brand identities and digital experiences. I blend strategy, storytelling, and aesthetics to transform complex ideas into simple, engaging, and impactful visuals.</p>
         <div class="about-skills-label label">Tools &amp; Skills</div>
-        <div class="pills">
-          <span class="pill" data-cursor>Figma</span>
-          <span class="pill" data-cursor>Illustrator</span>
-          <span class="pill" data-cursor>Photoshop</span>
-          <span class="pill" data-cursor>Procreate</span>
-          <span class="pill" data-cursor>Framer</span>
-          <span class="pill" data-cursor>Canva</span>
-          <span class="pill" data-cursor>Claude Design</span>
-          <span class="pill" data-cursor>Claude Code</span>
+        <div class="skill-grid">
+          <span class="skill-box" data-cursor title="Figma"><image-slot id="skFigma" shape="rounded" radius="12" src="uploads/figma.png" placeholder="Figma"></image-slot></span>
+          <span class="skill-box" data-cursor title="Illustrator"><image-slot id="skIllustrator" shape="rounded" radius="12" src="uploads/ai.png" placeholder="Illustrator"></image-slot></span>
+          <span class="skill-box" data-cursor title="Photoshop"><image-slot id="skPhotoshop" shape="rounded" radius="12" src="uploads/ps.png" placeholder="Photoshop"></image-slot></span>
+          <span class="skill-box" data-cursor title="Procreate"><image-slot id="skProcreate" shape="rounded" radius="12" src="uploads/pro.png" placeholder="Procreate"></image-slot></span>
+          <span class="skill-box" data-cursor title="Framer"><image-slot id="skFramer" shape="rounded" radius="12" src="uploads/framer.png" placeholder="Framer"></image-slot></span>
+          <span class="skill-box" data-cursor title="Canva"><image-slot id="skCanva" shape="rounded" radius="12" src="uploads/canva.png" placeholder="Canva"></image-slot></span>
+          <span class="skill-box" data-cursor title="Claude Design"><image-slot id="skClaudeDesign" shape="rounded" radius="12" src="uploads/claude.png" placeholder="Claude Design"></image-slot></span>
+          <span class="skill-box" data-cursor title="Claude Code"><image-slot id="skClaudeCode" shape="rounded" radius="12" src="uploads/claude-code.png" placeholder="Claude Code"></image-slot></span>
+          <span class="skill-box" data-cursor title="Gemini"><image-slot id="skGemini" shape="rounded" radius="12" src="uploads/gemini.png" placeholder="Gemini"></image-slot></span>
+          <span class="skill-box" data-cursor title="ChatGPT"><image-slot id="skChatGPT" shape="rounded" radius="12" src="uploads/gpt.png" placeholder="ChatGPT"></image-slot></span>
         </div>
       </div>
       <div class="about-right reveal">
