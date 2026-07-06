@@ -365,6 +365,14 @@
     pointer-events: none;
   }
   .hero-astro-img { display: block; width: 100%; height: auto; }
+  /* hero intro — art layers ease in once the preloader finishes */
+  .hero-bgart { opacity: 0; transition: opacity 1.4s ease 0.05s; }
+  .hero-astro { opacity: 0; transform: translateY(22px); transition: opacity 1.2s ease 0.22s, transform 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.22s; }
+  html.preloaded .hero-bgart { opacity: 1; }
+  html.preloaded .hero-astro { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-bgart, .hero-astro { opacity: 1; transform: none; transition: none; }
+  }
   /* holographic scan on the suits — masked to the astronaut shapes, cliff excluded */
   /* wrapper fades the scan out toward the feet (soft blend, no hard edge, off the rock) */
   .astro-holo-wrap {
@@ -1587,12 +1595,17 @@
       var pl = document.getElementById("preloader");
       if (!pl) return;
       var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce) { pl.remove(); return; }
+      function signalReady() {
+        document.documentElement.classList.add("preloaded");
+        window.dispatchEvent(new Event("preloaded"));
+      }
+      if (reduce) { pl.remove(); signalReady(); return; }
 
       var start = Date.now(), MIN = 2400, MAX = 4000, dismissed = false;
       function done() {
         if (dismissed) return; dismissed = true;
         pl.classList.add("done");
+        signalReady();   // trigger the coordinated hero entrance as the loader fades
         setTimeout(function () { pl.remove(); }, 750);
       }
       function trigger() { setTimeout(done, Math.max(0, MIN - (Date.now() - start))); }
@@ -2235,8 +2248,17 @@
   })();
 
   // ===== Reveal on scroll =====
-  const reveals = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+  const heroEl = document.getElementById("top");
+  const allReveals = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+  // hero copy reveals AFTER the preloader (coordinated intro); everything else on scroll
+  const heroReveals = allReveals.filter(function (el) { return heroEl && heroEl.contains(el); });
+  const reveals = allReveals.filter(function (el) { return !(heroEl && heroEl.contains(el)); });
   function revealAll() { reveals.forEach(function (el) { el.classList.add("in"); }); }
+
+  function revealHero() { heroReveals.forEach(function (el) { el.classList.add("in"); }); }
+  if (document.documentElement.classList.contains("preloaded")) revealHero();
+  else window.addEventListener("preloaded", revealHero, { once: true });
+  setTimeout(revealHero, 4600);   // safety: never leave the hero hidden
 
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver(function (entries) {
