@@ -309,8 +309,9 @@
     justify-content: flex-end;
     padding: var(--gutter);
     padding-bottom: clamp(96px, 18vh, 220px);
-    overflow: hidden; /* clip the bleeding hero-sat so it can't widen the page */
+    overflow: hidden;
   }
+  .hero-sat { display: none; }   /* satellite removed */
   /* procedural black-marble fluid texture (cursor-liquify) */
   .hero-fluid {
     position: absolute;
@@ -323,8 +324,104 @@
     opacity: 0.85;
     transition: opacity 0.6s ease;
   }
-  /* keep all hero content above the texture */
-  .hero > :not(.hero-fluid):not(.hero-stars):not(.scroll-tag):not(.hero-sat) { position: relative; z-index: 2; }
+  /* keep the hero copy above every art layer */
+  .hero > :not(.hero-fluid):not(.hero-stars):not(.scroll-tag):not(.hero-sat):not(.hero-bgart):not(.hero-astro) { position: relative; z-index: 4; }
+  /* layer stack: fluid(0) → stars(1) → bg art(2) → astronauts(3) → copy/nav(4+) */
+  /* organic BG art layer — wrapper carries the cursor parallax, img carries the drift */
+  .hero-bgart {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    transform: translate3d(var(--bgx, 0px), var(--bgy, 0px), 0);
+    will-change: transform;
+  }
+  .hero-bgart-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transform-origin: center;
+    animation: bgFloat 26s ease-in-out infinite;
+  }
+  /* slow organic space drift + breathing */
+  @keyframes bgFloat {
+    0%   { transform: translate(0, 0) scale(1.04) rotate(0deg); }
+    33%  { transform: translate(1.3%, -1.5%) scale(1.07) rotate(0.5deg); }
+    66%  { transform: translate(-1.1%, 1.1%) scale(1.05) rotate(-0.4deg); }
+    100% { transform: translate(0, 0) scale(1.04) rotate(0deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-bgart-img { animation: none; }
+  }
+  .hero-astro {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: clamp(190px, 46vw, 920px);
+    z-index: 3;
+    pointer-events: none;
+  }
+  .hero-astro-img { display: block; width: 100%; height: auto; }
+  /* holographic scan on the suits — masked to the astronaut shapes, cliff excluded */
+  /* wrapper fades the scan out toward the feet (soft blend, no hard edge, off the rock) */
+  .astro-holo-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 60%);
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-image: linear-gradient(180deg, #000 0%, #000 42%, transparent 60%);
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+  }
+  .astro-holo {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    /* single silhouette mask — the transparent background gets no effect at all */
+    -webkit-mask-image: url("uploads/astros.png");
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-image: url("uploads/astros.png");
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+  }
+  /* fine drifting scanlines (the persistent hologram texture) */
+  .astro-holo:not(.sweep) {
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(232, 214, 170, 0.08) 0px,
+      rgba(232, 214, 170, 0.08) 1px,
+      transparent 1px,
+      transparent 5px
+    );
+    animation: holoDrift 3.5s linear infinite;
+  }
+  @keyframes holoDrift { from { background-position: 0 0; } to { background-position: 0 5px; } }
+  /* periodic brighter scan band sweeping up the suits */
+  .astro-holo.sweep {
+    background: linear-gradient(180deg, transparent 0%, rgba(232, 214, 170, 0.3) 50%, transparent 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 26%;
+    background-position: 0 120%;
+    animation: holoSweep 5.5s ease-in-out infinite;
+  }
+  @keyframes holoSweep {
+    0%   { background-position: 0 130%; opacity: 0; }
+    14%  { opacity: 1; }
+    72%  { background-position: 0 -30%; opacity: 1; }
+    82%  { background-position: 0 -30%; opacity: 0; }
+    100% { background-position: 0 -30%; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .astro-holo { animation: none; }
+    .astro-holo.sweep { opacity: 0; }
+  }
   /* twinkling stars layer — above the marble, below the text */
   .hero-stars {
     position: absolute;
@@ -442,7 +539,7 @@
     font-size: clamp(52px, 11vw, 168px);
     line-height: 0.92;
     letter-spacing: -0.01em;
-    max-width: 14ch;
+    max-width: 20ch;
   }
   .h1-word { white-space: nowrap; }  /* keep each word intact when the title wraps */
   .hero-bio {
@@ -1533,6 +1630,15 @@
   <header class="hero" id="top" data-screen-label="Hero">
     <canvas id="heroFluid" class="hero-fluid" aria-hidden="true"></canvas>
     <canvas id="heroStars" class="hero-stars" aria-hidden="true"></canvas>
+    <div class="hero-bgart" aria-hidden="true"><img class="hero-bgart-img" src="uploads/hero-bg.png" alt="" /></div>
+    <div class="hero-astro" aria-hidden="true">
+      <img class="hero-astro-img" src="uploads/astros.png" alt="" />
+      <!-- techy holographic scan riding over the suits (masked to the astronaut shapes) -->
+      <div class="astro-holo-wrap" aria-hidden="true">
+        <span class="astro-holo"></span>
+        <span class="astro-holo sweep"></span>
+      </div>
+    </div>
     <div class="hero-sat" id="heroSat" aria-hidden="true">
       <div class="hero-sat-inner">
         <img src="uploads/sate.png" alt="" class="hero-sat-img" />
@@ -1545,8 +1651,8 @@
       <div class="hero-label reveal" style="--rd: 0.05s">
         <span class="label">DESIGNER — GRAPHIC · ILLUSTRATION · USER EXPERIENCE</span>
       </div>
-      <h1 class="reveal" id="heroTitle" style="font-size: 72px; font-family: Montserrat; line-height: 1.1; font-weight: 500; --rd: 0.18s">Launching ideas<br><span class="ital" style="font-weight: 500">to Life</span></h1>
-      <p class="hero-bio reveal" style="--rd: 0.32s">A multidisciplinary designer working across graphic design, illustration, and digital products shaping ideas into considered, expressive visual systems.</p>
+      <h1 class="reveal" id="heroTitle" style="font-size: 60px; font-family: Montserrat; line-height: 1.12; font-weight: 500; --rd: 0.18s">Exploring ideas<br><span class="ital" style="font-weight: 500">beyond the ordinary</span></h1>
+      <p class="hero-bio reveal" style="--rd: 0.32s">A visual designer crafting expressive brand systems, illustrations, and digital experiences that turn ambitious concepts into memorable visual stories.</p>
     </div>
     <div class="scroll-tag" style="letter-spacing: 0.3em; align-items: center">Scroll</div>
   </header>
@@ -2191,16 +2297,12 @@
     });
   })();
 
-  // ===== Hero title — per-character force-field interaction =====
+  // ===== Per-character force-field interaction (hero title + contact heading) =====
   (function () {
-    const title = document.getElementById("heroTitle");
-    const hero = document.getElementById("top");
-    if (!title || !hero) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // wrap every character in a .h1-char span, but group chars into per-word
-    // wrappers (.h1-word, white-space:nowrap) so words never break mid-word —
-    // line breaks happen only at the spaces between words.
+    // wrap every character in a .h1-char span, grouped into per-word wrappers
+    // (.h1-word, white-space:nowrap) so words never break mid-word.
     function splitNode(node, dest) {
       node.childNodes.forEach(function (child) {
         if (child.nodeType === 3) {
@@ -2221,51 +2323,58 @@
             dest.appendChild(word);
           });
         } else if (child.nodeType === 1) {
-          const clone = child.cloneNode(false); // keep tag + classes (e.g. .ital)
+          const clone = child.cloneNode(false); // keep tag + classes (e.g. .ital, <br>)
           dest.appendChild(clone);
           splitNode(child, clone);
         }
       });
     }
-    const frag = document.createElement("span");
-    splitNode(title, frag);
-    title.textContent = "";
-    title.appendChild(frag);
-    const chars = Array.prototype.slice.call(title.querySelectorAll(".h1-char"));
-    if (reduce || !chars.length) return;
 
-    const R = 150;        // influence radius (px)
-    const PUSH = 16;      // max displacement (px)
-    let raf = 0, mxr = 0, myr = 0, active = false;
+    function charField(title, zone) {
+      if (!title || !zone) return;
+      const frag = document.createElement("span");
+      splitNode(title, frag);
+      title.textContent = "";
+      title.appendChild(frag);
+      const chars = Array.prototype.slice.call(title.querySelectorAll(".h1-char"));
+      if (reduce || !chars.length) return;
 
-    function apply() {
-      raf = 0;
-      for (let i = 0; i < chars.length; i++) {
-        const r = chars[i].getBoundingClientRect();
-        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-        const dx = cx - mxr, dy = cy - myr;
-        const dist = Math.hypot(dx, dy);
-        if (active && dist < R) {
-          const f = (1 - dist / R);
-          const k = f * f;
-          const ux = (dx / (dist || 1)) * PUSH * k;
-          const uy = (dy / (dist || 1)) * PUSH * k - 4 * k; // slight lift
-          chars[i].style.transform = "translate(" + ux.toFixed(2) + "px," + uy.toFixed(2) + "px)";
-          chars[i].style.textShadow = "0 0 " + (14 * k).toFixed(1) + "px rgba(200,184,154," + (0.5 * k).toFixed(2) + ")";
-        } else {
-          chars[i].style.transform = "";
-          chars[i].style.textShadow = "";
+      const R = 150;        // influence radius (px)
+      const PUSH = 16;      // max displacement (px)
+      let raf = 0, mxr = 0, myr = 0, active = false;
+
+      function apply() {
+        raf = 0;
+        for (let i = 0; i < chars.length; i++) {
+          const r = chars[i].getBoundingClientRect();
+          const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+          const dx = cx - mxr, dy = cy - myr;
+          const dist = Math.hypot(dx, dy);
+          if (active && dist < R) {
+            const f = (1 - dist / R);
+            const k = f * f;
+            const ux = (dx / (dist || 1)) * PUSH * k;
+            const uy = (dy / (dist || 1)) * PUSH * k - 4 * k; // slight lift
+            chars[i].style.transform = "translate(" + ux.toFixed(2) + "px," + uy.toFixed(2) + "px)";
+            chars[i].style.textShadow = "0 0 " + (14 * k).toFixed(1) + "px rgba(200,184,154," + (0.5 * k).toFixed(2) + ")";
+          } else {
+            chars[i].style.transform = "";
+            chars[i].style.textShadow = "";
+          }
         }
       }
+      zone.addEventListener("pointermove", function (e) {
+        mxr = e.clientX; myr = e.clientY; active = true;
+        if (!raf) raf = requestAnimationFrame(apply);
+      }, { passive: true });
+      zone.addEventListener("pointerleave", function () {
+        active = false;
+        if (!raf) raf = requestAnimationFrame(apply);
+      });
     }
-    hero.addEventListener("pointermove", function (e) {
-      mxr = e.clientX; myr = e.clientY; active = true;
-      if (!raf) raf = requestAnimationFrame(apply);
-    }, { passive: true });
-    hero.addEventListener("pointerleave", function () {
-      active = false;
-      if (!raf) raf = requestAnimationFrame(apply);
-    });
+
+    charField(document.getElementById("heroTitle"), document.getElementById("top"));
+    charField(document.querySelector(".contact h2"), document.querySelector(".contact"));
   })();
 
   // ===== Scroll parallax (simple, transform-safe) =====
@@ -2385,6 +2494,37 @@
       if (Math.abs(tx - cx) + Math.abs(ty - cy) + Math.abs(trx - crx) + Math.abs(try_ - cry) > 0.02) {
         requestAnimationFrame(loop);
       } else { active = false; }
+    }
+    window.addEventListener("mousemove", onMove, { passive: true });
+  })();
+
+  // ===== Hero BG organic art — high-intensity cursor parallax =====
+  (function () {
+    const bg = document.querySelector(".hero-bgart");
+    const hero = document.getElementById("top");
+    if (!bg || !hero) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const AMT_X = 80, AMT_Y = 55;   // high intensity
+    let tx = 0, ty = 0, cx = 0, cy = 0, active = false;
+
+    function onMove(e) {
+      const r = hero.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= window.innerHeight) return;
+      let nx = (e.clientX - r.left) / r.width - 0.5;
+      let ny = (e.clientY - r.top) / r.height - 0.5;
+      nx = nx < -0.5 ? -0.5 : nx > 0.5 ? 0.5 : nx;
+      ny = ny < -0.5 ? -0.5 : ny > 0.5 ? 0.5 : ny;
+      tx = -nx * AMT_X;   // drift opposite the cursor for depth
+      ty = -ny * AMT_Y;
+      if (!active) { active = true; loop(); }
+    }
+    function loop() {
+      cx += (tx - cx) * 0.06; cy += (ty - cy) * 0.06;
+      bg.style.setProperty("--bgx", cx.toFixed(2) + "px");
+      bg.style.setProperty("--bgy", cy.toFixed(2) + "px");
+      if (Math.abs(tx - cx) + Math.abs(ty - cy) > 0.1) requestAnimationFrame(loop);
+      else active = false;
     }
     window.addEventListener("mousemove", onMove, { passive: true });
   })();
@@ -2547,8 +2687,8 @@
     // slow, continuous left→right drift of the space texture (independent of cursor parallax)
     const drift = reduce ? 0 : -(performance.now() - t0) * 0.0000055;
     gl.uniform2f(uRes, W, H);
-    // continuous drift + pan opposite the cursor + a slow downward drift as the hero scrolls away
-    gl.uniform2f(uShift, drift - nx * amt, ny * amt + scY * 0.06);
+    // autonomous drift + a slow downward shift as the hero scrolls away (no cursor parallax)
+    gl.uniform2f(uShift, drift, scY * 0.06);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     requestAnimationFrame(render);
   }
@@ -2670,7 +2810,7 @@
 
   const fields = [
     makeStarfield(document.getElementById("starsBg"), { densityPx: 12000, depth: 7 }),
-    makeStarfield(document.getElementById("heroStars"), { densityPx: 9000, goldChance: 0.22, shootGapMin: 3000, shootGapMax: 7000, depth: 16 })
+    makeStarfield(document.getElementById("heroStars"), { densityPx: 9000, goldChance: 0.22, shootGapMin: 700, shootGapMax: 2200, depth: 16 })
   ].filter(Boolean);
 
   // space parallax: layers drift opposite the cursor, nearer layers move more
@@ -2691,9 +2831,9 @@
       const d = fields[i].depth || 0;
       // global bg drifts slowly upward on scroll for a parallax depth cue
       const scrollDrift = fields[i].canvas.id === "starsBg" ? -sy * 0.045 : 0;
-      if (d || scrollDrift)
-        fields[i].canvas.style.transform =
-          "translate(" + (-epx * d).toFixed(2) + "px," + (-epy * d + scrollDrift).toFixed(2) + "px)";
+      // cursor parallax removed from the galaxy layer — keep only the scroll drift
+      if (scrollDrift)
+        fields[i].canvas.style.transform = "translate(0," + scrollDrift.toFixed(2) + "px)";
     }
     requestAnimationFrame(loop);
   }
@@ -2728,72 +2868,111 @@
 
   function rand(a, b) { return a + Math.random() * (b - a); }
 
-  const drifters = [];
-  let nextSpawn = 0;
+  // ---- persistent stones with 2D collision physics ----
+  const N = 5;
+  const COLL = 0.82;                  // collision radius vs the drawn half-size (rocks fill ~80%)
+  const REST = 0.99;                  // restitution — near-elastic bounces
+  const MAXV = 22 * dpr / 1000;       // speed cap so collisions can't build up runaway velocity
+  const stones = [];
 
-  function spawn(now) {
-    // bias entry toward the left third of the hero (where it feels emptiest)
-    const fromLeft = Math.random() < 0.62;
-    const r = rand(46, 120) * dpr;          // half-size of the rock
-    const margin = r + 40 * dpr;
-    const y = rand(H * 0.05, H * 0.92);
-    const speed = rand(7, 17) * dpr / 1000;  // px per ms
-    const dir = fromLeft ? 1 : -1;
-    const x = fromLeft ? -margin : W + margin;
-    const path = W + margin * 2;
-    drifters.push({
-      x: x, y: y,
-      vx: dir * speed,
-      vy: rand(-2.5, 2.5) * dpr / 1000,
-      r: r,
-      rot: rand(0, Math.PI * 2),
-      vrot: rand(-0.00012, 0.00012),
-      img: Math.floor(Math.random() * ROCKS.length),
-      maxA: rand(0.22, 0.46),
-      born: now,
-      dur: path / speed
-    });
+  function init() {
+    stones.length = 0;
+    for (let i = 0; i < N; i++) {
+      const r = rand(46, 108) * dpr;
+      let x, y, ok, tries = 0;
+      do {
+        x = rand(r, W - r); y = rand(r, H - r); ok = true;
+        for (let j = 0; j < stones.length; j++) {
+          if (Math.hypot(x - stones[j].x, y - stones[j].y) < (r + stones[j].r) * COLL) { ok = false; break; }
+        }
+      } while (!ok && ++tries < 50);
+      const sp = rand(4, 10) * dpr / 1000;
+      const ang = rand(0, Math.PI * 2);
+      stones.push({
+        x: x, y: y,
+        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+        r: r, m: r * r,
+        rot: rand(0, Math.PI * 2), vrot: rand(-0.00008, 0.00008),
+        img: i % ROCKS.length,
+        maxA: rand(0.22, 0.44), a: 0
+      });
+    }
   }
 
-  function smooth(t) { return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t); }
+  function collide() {
+    // bounce off the viewport edges
+    for (let i = 0; i < stones.length; i++) {
+      const s = stones[i], cr = s.r * COLL;
+      if (s.x < cr && s.vx < 0) { s.x = cr; s.vx = -s.vx * REST; }
+      else if (s.x > W - cr && s.vx > 0) { s.x = W - cr; s.vx = -s.vx * REST; }
+      if (s.y < cr && s.vy < 0) { s.y = cr; s.vy = -s.vy * REST; }
+      else if (s.y > H - cr && s.vy > 0) { s.y = H - cr; s.vy = -s.vy * REST; }
+    }
+    // stone ↔ stone elastic collisions
+    for (let i = 0; i < stones.length; i++) {
+      for (let j = i + 1; j < stones.length; j++) {
+        const a = stones[i], b = stones[j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const dist = Math.hypot(dx, dy) || 0.0001;
+        const min = (a.r + b.r) * COLL;
+        if (dist >= min) continue;
+        const nx = dx / dist, ny = dy / dist;
+        const invA = 1 / a.m, invB = 1 / b.m, invSum = invA + invB;
+        // push the pair apart out of overlap (heavier stone moves less)
+        const overlap = min - dist;
+        a.x -= nx * overlap * (invA / invSum); a.y -= ny * overlap * (invA / invSum);
+        b.x += nx * overlap * (invB / invSum); b.y += ny * overlap * (invB / invSum);
+        // resolve velocity along the collision normal (only if approaching)
+        const rvx = b.vx - a.vx, rvy = b.vy - a.vy;
+        const vn = rvx * nx + rvy * ny;
+        if (vn < 0) {
+          const imp = -(1 + REST) * vn / invSum;
+          a.vx -= imp * nx * invA; a.vy -= imp * ny * invA;
+          b.vx += imp * nx * invB; b.vy += imp * ny * invB;
+          // tangential slip imparts a little tumble
+          const tmag = Math.hypot(rvx - vn * nx, rvy - vn * ny);
+          a.vrot += tmag * 0.000015 * (Math.random() < 0.5 ? 1 : -1);
+          b.vrot -= tmag * 0.000015 * (Math.random() < 0.5 ? 1 : -1);
+        }
+      }
+    }
+    // clamp speeds / spin
+    for (let i = 0; i < stones.length; i++) {
+      const s = stones[i], sp = Math.hypot(s.vx, s.vy);
+      if (sp > MAXV) { s.vx = s.vx / sp * MAXV; s.vy = s.vy / sp * MAXV; }
+      if (s.vrot > 0.0004) s.vrot = 0.0004; else if (s.vrot < -0.0004) s.vrot = -0.0004;
+    }
+  }
 
-  function drawRock(d, a) {
-    const img = ROCKS[d.img];
+  function drawRock(s) {
+    const img = ROCKS[s.img];
     if (!img || !img.complete || !img.naturalWidth) return;
-    const size = d.r * 2;
+    const size = s.r * 2;
     ctx.save();
-    ctx.globalAlpha = a;
-    ctx.translate(d.x, d.y);
-    ctx.rotate(d.rot);
+    ctx.globalAlpha = s.a;
+    ctx.translate(s.x, s.y);
+    ctx.rotate(s.rot);
     ctx.drawImage(img, -size / 2, -size / 2, size, size);
     ctx.restore();
   }
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(60, now - last); last = now;
-    if (W <= 1 || H <= 1) resize();   // viewport may not be measurable on first frame
+    const dt = Math.min(48, now - last); last = now;
+    if (W <= 1 || H <= 1) resize();
     ctx.clearRect(0, 0, W, H);
     if (params.on && !reduce) {
-      if (now > nextSpawn && drifters.length < 5) {
-        spawn(now);
-        nextSpawn = now + rand(2600, 6000) / params.density;
+      if (!stones.length && W > 1 && ROCKS[0] && ROCKS[0].complete) init();
+      for (let i = 0; i < stones.length; i++) {
+        const s = stones[i];
+        s.x += s.vx * dt; s.y += s.vy * dt; s.rot += s.vrot * dt;
+        s.a += (s.maxA - s.a) * 0.02;   // ease up to steady opacity
       }
-      for (let i = drifters.length - 1; i >= 0; i--) {
-        const d = drifters[i];
-        d.x += d.vx * dt; d.y += d.vy * dt; d.rot += d.vrot * dt;
-        const p = (now - d.born) / d.dur;
-        if (p >= 1) { drifters.splice(i, 1); continue; }
-        const env = smooth(p / 0.16) * smooth((1 - p) / 0.2); // ease in then out
-        const a = d.maxA * env;
-        if (a <= 0.002) continue;
-        drawRock(d, a);
-      }
+      collide();
+      for (let i = 0; i < stones.length; i++) drawRock(stones[i]);
     }
     requestAnimationFrame(frame);
   }
-  // stagger the first appearance so the hero isn't instantly busy
-  nextSpawn = performance.now() + 900;
   requestAnimationFrame(frame);
 })();
 </script>
