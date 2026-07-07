@@ -1546,9 +1546,12 @@
       justify-content: center;
       align-items: center;
       gap: 30px;
-      background: rgba(13, 13, 13, 0.97);
-      backdrop-filter: blur(20px) saturate(120%);
-      -webkit-backdrop-filter: blur(20px) saturate(120%);
+      /* fully opaque solid fill — backdrop-filter is dropped on purpose:
+         over the work cards (will-change: transform) iOS Safari fails to
+         composite a backdrop-filtered layer, leaving the overlay see-through
+         while its links still paint on top. A solid bg covers content in
+         every section, matching the hero. */
+      background: var(--bg);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s ease;
