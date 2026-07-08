@@ -392,13 +392,12 @@
     will-change: transform;
   }
   .hero-astro-img { display: block; width: 100%; height: auto; }
-  /* hero intro — art layers ease in once the preloader finishes */
-  .hero-pillar { opacity: 0; transition: opacity 1.4s ease 0.05s; }
+  /* light pillar is on by default — part of the background revealed by the iris, no entrance */
+  .hero-pillar { opacity: 0.9; }
+  /* hero intro — only the astronaut image eases in once the preloader finishes (copy handled in JS) */
   .hero-astro { opacity: 0; transform: translateY(22px); transition: opacity 1.2s ease 0.22s, transform 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.22s; }
-  html.preloaded .hero-pillar { opacity: 0.9; }
   html.preloaded .hero-astro { opacity: 1; transform: none; }
   @media (prefers-reduced-motion: reduce) {
-    .hero-pillar { opacity: 0.9; transition: none; }
     .hero-astro { opacity: 1; transform: none; transition: none; }
   }
   /* holographic scan on the suits — masked to the astronaut shapes, cliff excluded */
@@ -1638,11 +1637,34 @@
       if (reduce) { pl.remove(); signalReady(); return; }
 
       var start = Date.now(), MIN = 3800, MAX = 5800, dismissed = false;
+      // iris reveal: a soft-edged transparent circle grows from the centre, dissolving the
+      // preloader outward to bring the hero into view — mirrors the warp's one-point perspective
+      function irisReveal(onDone) {
+        var maxR = Math.hypot(window.innerWidth, window.innerHeight) / 2;   // centre → corner
+        var feather = Math.max(90, Math.min(window.innerWidth, window.innerHeight) * 0.16); // dissolved edge
+        var dur = 825, t0 = performance.now(), finished = false;   // 25% faster reveal
+        pl.style.pointerEvents = "none";
+        function finish() { if (finished) return; finished = true; if (pl.isConnected) pl.remove(); onDone && onDone(); }
+        function frame(now) {
+          if (!pl.isConnected) { finish(); return; }
+          var p = Math.min(1, (now - t0) / dur);
+          var e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;   // easeInOutCubic
+          var outer = e * (maxR + feather);                // fully-opaque edge grows from 0 radius
+          var inner = Math.max(0, outer - feather);        // transparent hole trails behind by the feather
+          var m = "radial-gradient(circle at 50% 50%, rgba(0,0,0,0) " + inner.toFixed(1) +
+                  "px, rgba(0,0,0,1) " + outer.toFixed(1) + "px)";
+          pl.style.webkitMaskImage = m;
+          pl.style.maskImage = m;
+          if (p < 1) requestAnimationFrame(frame);
+          else finish();
+        }
+        requestAnimationFrame(frame);
+        setTimeout(finish, dur + 500);   // fallback removal if rAF is throttled (hidden tab)
+      }
       function done() {
         if (dismissed) return; dismissed = true;
-        pl.classList.add("done");
-        signalReady();   // trigger the coordinated hero entrance as the loader fades
-        setTimeout(function () { pl.remove(); }, 750);
+        // open the iris first; the hero text/image entrance kicks off only once it completes
+        irisReveal(signalReady);
       }
       function trigger() { setTimeout(done, Math.max(0, MIN - (Date.now() - start))); }
 
