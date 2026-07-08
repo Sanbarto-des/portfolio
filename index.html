@@ -116,6 +116,8 @@
     top: 0; left: 0;
     pointer-events: none;
     z-index: 10000;
+    /* own compositor layer so movement stays smooth while the hero canvases churn */
+    will-change: transform;
   }
   .cursor-ship {
     width: 30px; height: 30px;
@@ -372,11 +374,22 @@
   }
   .hero-astro {
     position: absolute;
-    right: 0;
-    bottom: 0;
+    /* bleed the opaque right/bottom edges past the viewport so cursor drift never
+       pulls that hard dark boundary into view (left/top edges are transparent = safe) */
+    right: -34px;
+    bottom: -30px;
     width: clamp(190px, 46vw, 920px);
     z-index: 3;
     pointer-events: none;
+    perspective: 1400px;
+  }
+  /* inner layer follows the cursor (set via JS); keeps the intro transform on .hero-astro clean */
+  .hero-astro-inner {
+    position: relative;
+    transform: translate3d(var(--amx, 0px), var(--amy, 0px), 0)
+               rotateX(var(--arx, 0deg)) rotateY(var(--ary, 0deg));
+    transform-origin: 60% 40%;
+    will-change: transform;
   }
   .hero-astro-img { display: block; width: 100%; height: auto; }
   /* hero intro — art layers ease in once the preloader finishes */
@@ -1713,11 +1726,14 @@
     <canvas id="heroStars" class="hero-stars" aria-hidden="true"></canvas>
     <canvas id="heroPillar" class="hero-pillar" aria-hidden="true"></canvas>
     <div class="hero-astro" aria-hidden="true">
-      <img class="hero-astro-img" src="uploads/astros.png" alt="" />
-      <!-- techy holographic scan riding over the suits (masked to the astronaut shapes) -->
-      <div class="astro-holo-wrap" aria-hidden="true">
-        <span class="astro-holo"></span>
-        <span class="astro-holo sweep"></span>
+      <!-- inner layer drifts/tilts with the cursor; holo scan rides along so it stays glued to the suits -->
+      <div class="hero-astro-inner">
+        <img class="hero-astro-img" src="uploads/astros.png" alt="" />
+        <!-- techy holographic scan riding over the suits (masked to the astronaut shapes) -->
+        <div class="astro-holo-wrap" aria-hidden="true">
+          <span class="astro-holo"></span>
+          <span class="astro-holo sweep"></span>
+        </div>
       </div>
     </div>
     <div class="hero-sat" id="heroSat" aria-hidden="true">
@@ -2365,10 +2381,12 @@
     let angle = 0; // 0deg = ship pointing up (its rest heading)
     document.addEventListener("mousemove", function (e) {
       mx = e.clientX; my = e.clientY;
-    });
+      // pin the ship to the pointer right away so it never trails a frame behind a busy main thread
+      ship.style.transform = "translate3d(" + mx + "px," + my + "px,0) translate(-50%,-50%) rotate(" + angle.toFixed(2) + "deg)";
+    }, { passive: true });
     function tick() {
-      rx += (mx - rx) * 0.16;
-      ry += (my - ry) * 0.16;
+      rx += (mx - rx) * 0.22;
+      ry += (my - ry) * 0.22;
       // heading from the smoothed lag vector — the nose points where it flies
       const hdx = mx - rx, hdy = my - ry;
       if (Math.hypot(hdx, hdy) > 1.2) {
@@ -2376,8 +2394,8 @@
         let diff = ((ta - angle + 540) % 360) - 180;
         angle += diff * 0.22;
       }
-      ship.style.transform = "translate(" + mx + "px," + my + "px) translate(-50%,-50%) rotate(" + angle.toFixed(2) + "deg)";
-      trail.style.transform = "translate(" + rx + "px," + ry + "px) translate(-50%,-50%)";
+      ship.style.transform = "translate3d(" + mx + "px," + my + "px,0) translate(-50%,-50%) rotate(" + angle.toFixed(2) + "deg)";
+      trail.style.transform = "translate3d(" + rx + "px," + ry + "px,0) translate(-50%,-50%)";
       requestAnimationFrame(tick);
     }
     tick();
@@ -2617,6 +2635,45 @@
       vis.style.setProperty("--amy", cy.toFixed(2) + "px");
       vis.style.setProperty("--arx", crx.toFixed(2) + "deg");
       vis.style.setProperty("--ary", cry.toFixed(2) + "deg");
+      if (Math.abs(tx - cx) + Math.abs(ty - cy) + Math.abs(trx - crx) + Math.abs(try_ - cry) > 0.02) {
+        requestAnimationFrame(loop);
+      } else { active = false; }
+    }
+    window.addEventListener("mousemove", onMove, { passive: true });
+  })();
+
+  // ===== Hero astronauts — subtle cursor parallax (drift + faint tilt, holo scan rides along) =====
+  (function () {
+    const inner = document.querySelector(".hero-astro-inner");
+    if (!inner) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const hero = document.getElementById("top");
+    if (!hero) return;
+    let tx = 0, ty = 0, trx = 0, try_ = 0;   // targets
+    let cx = 0, cy = 0, crx = 0, cry = 0;     // current (eased)
+    let active = false;
+
+    function onMove(e) {
+      const r = hero.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= window.innerHeight) return;  // hero off-screen
+      let nx = (e.clientX - r.left) / r.width - 0.5;   // -0.5..0.5
+      let ny = (e.clientY - r.top) / r.height - 0.5;
+      nx = nx < -0.5 ? -0.5 : nx > 0.5 ? 0.5 : nx;     // clamp so it never over-shifts
+      ny = ny < -0.5 ? -0.5 : ny > 0.5 ? 0.5 : ny;
+      tx = nx * 20;            // px drift (subtle)
+      ty = ny * 13;
+      try_ = nx * 4;           // rotateY (deg)
+      trx = -ny * 3;           // rotateX (deg)
+      if (!active) { active = true; loop(); }
+    }
+    function loop() {
+      const E = 0.05;
+      cx += (tx - cx) * E; cy += (ty - cy) * E; crx += (trx - crx) * E; cry += (try_ - cry) * E;
+      inner.style.setProperty("--amx", cx.toFixed(2) + "px");
+      inner.style.setProperty("--amy", cy.toFixed(2) + "px");
+      inner.style.setProperty("--arx", crx.toFixed(2) + "deg");
+      inner.style.setProperty("--ary", cry.toFixed(2) + "deg");
       if (Math.abs(tx - cx) + Math.abs(ty - cy) + Math.abs(trx - crx) + Math.abs(try_ - cry) > 0.02) {
         requestAnimationFrame(loop);
       } else { active = false; }
@@ -2982,14 +3039,16 @@ void main() {
   }
 
   let time = 0;
-  const MOUSE_RANGE = 0.28;   // radians of sway the cursor can add (subtle)
-  const MOUSE_EASE = 0.03;    // slow, smooth follow (higher = snappier)
+  const MOUSE_RANGE = 0.5;    // radians of horizontal sway the cursor adds (a bit more lively)
+  const MOUSE_LEAN = 0.16;    // radians of extra lean from vertical cursor position
+  const MOUSE_EASE = 0.05;    // smooth follow (higher = snappier)
   function render() {
     if (!reduce) time += 0.016 * CFG.rotationSpeed;
 
     // gentle eased cursor nudge layered on top of the slow auto-rotation
     mx += (tmx - mx) * MOUSE_EASE;
-    const angle = time * 0.3 + mx * MOUSE_RANGE;
+    my += (tmy - my) * MOUSE_EASE;
+    const angle = time * 0.3 + mx * MOUSE_RANGE + my * MOUSE_LEAN;
 
     gl.uniform1f(uTime, time);
     gl.uniform1f(uRotCos, Math.cos(angle));
