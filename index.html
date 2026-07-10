@@ -1626,6 +1626,27 @@
     <div class="pl-bar" aria-hidden="true"></div>
   </div>
   <script>
+    // Scroll memory — remember where the user was on the landing page and restore it
+    // when they come back from a subpage (so they return to the section they left).
+    (function () {
+      try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
+      var KEY = "landing:scrollY";
+      function save() {
+        try { sessionStorage.setItem(KEY, String(window.scrollY || window.pageYOffset || 0)); } catch (e) {}
+      }
+      window.addEventListener("pagehide", save);
+      window.addEventListener("beforeunload", save);
+      // came back from a same-origin subpage?
+      var isReturn = false, savedY = 0;
+      try {
+        var ref = document.referrer;
+        if (ref) { var u = new URL(ref); isReturn = u.origin === location.origin && u.pathname !== location.pathname; }
+        savedY = parseInt(sessionStorage.getItem(KEY) || "0", 10) || 0;
+      } catch (e) {}
+      window.__landingReturn = isReturn && savedY > 0;
+      window.__landingScrollY = savedY;
+    })();
+
     (function () {
       var pl = document.getElementById("preloader");
       if (!pl) return;
@@ -1635,6 +1656,33 @@
         window.dispatchEvent(new Event("preloaded"));
       }
       if (reduce) { pl.remove(); signalReady(); return; }
+
+      // Returning from a subpage: skip the teleport, restore the section the user left,
+      // and fade a plain dark cover out over it (no warp, no "Teleporting").
+      if (window.__landingReturn) {
+        var warpC = document.getElementById("plWarp"); if (warpC) warpC.style.display = "none";
+        var ldr = pl.querySelector(".loader"); if (ldr) ldr.style.display = "none";
+        var bar = pl.querySelector(".pl-bar"); if (bar) bar.style.display = "none";
+        signalReady();
+        function restoreAndReveal() {
+          if (!location.hash) {
+            // jump instantly (bypass the page's smooth scroll-behavior) to the section left
+            var htmlEl = document.documentElement, prev = htmlEl.style.scrollBehavior;
+            htmlEl.style.scrollBehavior = "auto";
+            window.scrollTo(0, window.__landingScrollY || 0);
+            htmlEl.style.scrollBehavior = prev;
+          }
+          pl.style.transition = "opacity 0.5s ease";
+          pl.style.opacity = "0";
+          setTimeout(function () { if (pl.parentNode) pl.parentNode.removeChild(pl); }, 550);
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", function () { requestAnimationFrame(restoreAndReveal); }, { once: true });
+        } else {
+          requestAnimationFrame(restoreAndReveal);
+        }
+        return;
+      }
 
       var start = Date.now(), MIN = 3800, MAX = 5800, dismissed = false;
       // iris reveal: a soft-edged transparent circle grows from the centre, dissolving the
