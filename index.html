@@ -1549,6 +1549,15 @@
   @media (max-width: 560px) {
     .nav-logo svg { height: 17px; }
     .nav-toggle { display: flex; }
+    /* backdrop-filter makes nav the containing block for the position:fixed
+       overlay menu, collapsing it to the nav bar once scrolled. Drop the blur
+       on phones (unreliable on iOS anyway) and use a near-solid fill so the
+       full-screen menu keeps sizing against the viewport. */
+    nav.scrolled {
+      background: rgba(13, 13, 13, 0.92);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
     /* full-screen overlay menu */
     .nav-links {
       position: fixed;
