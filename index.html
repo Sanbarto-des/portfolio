@@ -2826,6 +2826,26 @@
   })();
 </script>
 <script>
+  // Perf gate — the heavy hero loops idle during the loading state and while the hero is
+  // off-screen or the tab is hidden, so both loading and scrolling stay smooth.
+  (function () {
+    var html = document.documentElement;
+    var heroOn = true;
+    function recompute() {
+      window.__afterPreload = html.classList.contains("preloaded");
+      window.__heroActive = window.__afterPreload && heroOn && !document.hidden;
+    }
+    recompute();
+    window.addEventListener("preloaded", recompute);
+    document.addEventListener("visibilitychange", recompute);
+    var heroEl = document.getElementById("top");
+    if (heroEl && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { heroOn = es[0].isIntersecting; recompute(); },
+        { threshold: 0 }).observe(heroEl);
+    }
+  })();
+</script>
+<script>
 (function () {
   const canvas = document.getElementById("heroFluid");
   const hero = document.getElementById("top");
@@ -2912,6 +2932,7 @@
 
   const t0 = performance.now();
   function render() {
+    if (!window.__heroActive) { requestAnimationFrame(render); return; }   // idle off-screen / during load
     nx += (tnx - nx) * 0.06;
     ny += (tny - ny) * 0.06;
     const amt = BASE * params.strength;
@@ -2952,7 +2973,7 @@
     pillarRotation: 110   // degrees
   };
   // raymarch quality (desktop). Lower ITER if perf-constrained.
-  const ITER = 64, WAVE_ITER = 4, STEP_MULT = 1.0;
+  const ITER = 40, WAVE_ITER = 4, STEP_MULT = 1.0;
 
   const VERT = "attribute vec2 position; varying vec2 vUv; void main(){ vUv = position * 0.5 + 0.5; gl_Position = vec4(position, 0.0, 1.0); }";
 
@@ -3122,6 +3143,7 @@ void main() {
   const MOUSE_LEAN = 0.16;    // radians of extra lean from vertical cursor position
   const MOUSE_EASE = 0.05;    // smooth follow (higher = snappier)
   function render() {
+    if (!window.__heroActive) { requestAnimationFrame(render); return; }   // idle off-screen / during load
     if (!reduce) time += 0.016 * CFG.rotationSpeed;
 
     // gentle eased cursor nudge layered on top of the slow auto-rotation
@@ -3272,6 +3294,7 @@ void main() {
   }
 
   function loop(now) {
+    if (!window.__afterPreload) { requestAnimationFrame(loop); return; }   // idle during the loading state
     epx += (tpx - epx) * 0.06;
     epy += (tpy - epy) * 0.06;
     const sy = reduce ? 0 : (window.scrollY || window.pageYOffset || 0);
@@ -3407,6 +3430,7 @@ void main() {
 
   let last = performance.now();
   function frame(now) {
+    if (!window.__afterPreload) { requestAnimationFrame(frame); return; }   // idle during the loading state
     const dt = Math.min(48, now - last); last = now;
     if (W <= 1 || H <= 1) resize();
     ctx.clearRect(0, 0, W, H);
