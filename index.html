@@ -565,6 +565,8 @@
     z-index: -1;
     pointer-events: none;
   }
+  /* per-section asteroids (injected by JS) — enabled on desktop only, sits behind content */
+  .sec-stones { display: none; }
   .hero-label {
     margin-bottom: clamp(28px, 6vh, 60px);
   }
@@ -1270,7 +1272,8 @@
     flex: 0 0 auto;
     width: 46px; height: 46px;
     border: 1px solid var(--line);
-    border-radius: 6px;
+    /* match the logo image's rounding (image-slot radius=10) + 1px border so corners align */
+    border-radius: 11px;
     overflow: hidden;
     background: var(--bg);
   }
@@ -1605,6 +1608,86 @@
     .cursor-ship, .cursor-trail, .cursor-target { display: none !important; }
     body { cursor: auto; }
   }
+  /* ===== Prototype: pinned section-stack below the hero (desktop only) =====
+     Each section pins to the top and the next slides up OVER it, above the static
+     stones/starfield backdrop. Bounded by #sectionStack so the footer reveals at the end. */
+  @media (min-width: 1024px) {
+    /* hero pins in place; everything below rises up and overlaps it */
+    .hero { position: sticky; top: 0; z-index: 0; }
+    #belowHero {
+      position: relative;
+      z-index: 1;
+      background: var(--bg);
+      box-shadow: 0 -30px 60px -10px rgba(0, 0, 0, 0.6);
+    }
+    /* lift the space backdrop above the opaque section stack so every section shows the
+       starfield + shooting stars + floating asteroids (both canvases are transparent, so a
+       plain overlay reads — no blend mode, no extra loops; the perf gate still applies) */
+    /* the space backdrop (stars + shooting stars + asteroids) renders per-section BEHIND
+       content (above each panel's opaque base); global star/drift layers stay at z-1 for hero/mobile */
+    .sec-stones {
+      display: block;
+      position: absolute;
+      top: 0; bottom: 0;
+      left: calc(-50vw + 50%);
+      width: 100vw;
+      z-index: -1;
+      pointer-events: none;
+    }
+    #sectionStack { position: relative; z-index: 1; }
+    #sectionStack > section {
+      position: sticky;
+      top: 0;
+      min-height: 100vh;
+    }
+    #about        { z-index: 1; }
+    #experience   { z-index: 2; }
+    #testimonials { z-index: 3; }
+    /* contact is sparse — center it in its pinned viewport so it doesn't jam at the top
+       with a void above the footer */
+    #contact      { z-index: 4; display: flex; flex-direction: column; justify-content: center; }
+    /* subtle light-pillar glow echoing the hero beam, aligned in the footer's empty space
+       (rises from the bottom-centre, behind the content) */
+    #contact::after {
+      content: "";
+      position: absolute;
+      left: 50%; bottom: -4%;
+      transform: translateX(-50%);
+      transform-origin: 50% 100%;
+      width: min(760px, 64vw);
+      height: 58%;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(34% 78% at 50% 100%, rgba(255, 255, 255, 0.10), transparent 66%),
+        radial-gradient(60% 92% at 50% 100%, rgba(255, 167, 29, 0.11), transparent 70%);
+      filter: blur(26px);
+      opacity: 0.85;
+      animation: footGlow 4.5s ease-in-out infinite;   /* subtle breathing high↔low */
+    }
+    @keyframes footGlow {
+      0%, 100% { opacity: 0.5; }
+      50%      { opacity: 0.95; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #contact::after { animation: none; }
+    }
+    /* full-width panel behind each section (covers full width even for the max-width
+       About/Experience); slightly translucent so the fixed stones backdrop glows through,
+       rounded top + top shadow so each incoming section reads as sliding over the previous */
+    #sectionStack > section::before {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0;
+      left: calc(-50vw + 50%);
+      width: 100vw;
+      z-index: -1;
+      background: var(--bg);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -30px 70px rgba(0, 0, 0, 0.55);
+    }
+  }
 </style>
 <link id="gfont-Comfortaa" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&amp;display=swap">
 <link id="gfont-Space-Grotesk" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap">
@@ -1720,7 +1803,9 @@
       }
       function done() {
         if (dismissed) return; dismissed = true;
-        // open the iris first; the hero text/image entrance kicks off only once it completes
+        // wake the hero's WebGL background so the iris reveals the LIT hero; the text/image
+        // entrance still waits for signalReady() at the end of the reveal
+        window.__afterPreload = true; window.__heroActive = true;
         irisReveal(signalReady);
       }
       function trigger() { setTimeout(done, Math.max(0, MIN - (Date.now() - start))); }
@@ -1833,6 +1918,7 @@
     <div class="scroll-tag" style="letter-spacing: 0.3em; align-items: center">Scroll</div>
   </header>
 
+  <div id="belowHero">
   <!-- TICKER -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track" id="tickerTrack"></div>
@@ -1960,6 +2046,7 @@
   </section>
 
   <!-- ABOUT -->
+  <div id="sectionStack">
   <section class="block" id="about" data-screen-label="About">
     <div class="section-label reveal"><span class="label">About me</span></div>
     <div class="about-grid">
@@ -2139,12 +2226,14 @@
       <a href="https://www.instagram.com/sanb_art_0/" target="_blank" rel="noopener" data-cursor>Instagram</a>
     </div>
   </section>
+  </div><!-- /#sectionStack -->
 
   <!-- FOOTER -->
   <footer>
     <span>© 2025 Sanbarto Mondal</span>
     <span>DESIGNED WITH FIGMA &amp; CLAUDE</span>
   </footer>
+  </div><!-- /#belowHero -->
 
 <script>
   // ===== Text glitch hover on nav + contact CTAs =====
@@ -2832,17 +2921,23 @@
     var html = document.documentElement;
     var heroOn = true;
     function recompute() {
-      window.__afterPreload = html.classList.contains("preloaded");
+      if (html.classList.contains("preloaded")) window.__afterPreload = true;   // monotonic once shown
       window.__heroActive = window.__afterPreload && heroOn && !document.hidden;
     }
     recompute();
     window.addEventListener("preloaded", recompute);
     document.addEventListener("visibilitychange", recompute);
     var heroEl = document.getElementById("top");
-    if (heroEl && "IntersectionObserver" in window) {
-      new IntersectionObserver(function (es) { heroOn = es[0].isIntersecting; recompute(); },
-        { threshold: 0 }).observe(heroEl);
+    // hero is sticky on desktop and gets covered by the content rising over it, so an
+    // IntersectionObserver would keep it "visible" — gate on scroll instead: idle its WebGL
+    // once we've scrolled roughly its own height (i.e. it's covered / out of view).
+    function updateHeroOn() {
+      heroOn = heroEl ? ((window.scrollY || window.pageYOffset || 0) < heroEl.offsetHeight * 0.9) : true;
+      recompute();
     }
+    window.addEventListener("scroll", updateHeroOn, { passive: true });
+    window.addEventListener("resize", updateHeroOn, { passive: true });
+    updateHeroOn();
   })();
 </script>
 <script>
@@ -2973,7 +3068,7 @@
     pillarRotation: 110   // degrees
   };
   // raymarch quality (desktop). Lower ITER if perf-constrained.
-  const ITER = 40, WAVE_ITER = 4, STEP_MULT = 1.0;
+  const ITER = 64, WAVE_ITER = 4, STEP_MULT = 1.0;
 
   const VERT = "attribute vec2 position; varying vec2 vUv; void main(){ vUv = position * 0.5 + 0.5; gl_Position = vec4(position, 0.0, 1.0); }";
 
@@ -3450,6 +3545,103 @@ void main() {
 })();
 </script>
 
+
+<script>
+/* Per-section space backdrop — starfield + shooting stars + floating asteroids, rendered
+   BEHIND each section's content (above its opaque panel). Visibility-gated. Desktop only. */
+(function () {
+  if (!window.matchMedia("(min-width: 1024px)").matches) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var secs = document.querySelectorAll("#about, #experience, #testimonials, #contact");
+  if (!secs.length) return;
+  var SRC = ["uploads/A1.png", "uploads/A2.png", "uploads/A3.png"];
+  var IMGS = SRC.map(function (s) { var i = new Image(); i.src = s; return i; });
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var COL = "240,237,232", GOLD = "200,184,154";
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+
+  secs.forEach(function (sec) {
+    var cv = document.createElement("canvas");
+    cv.className = "sec-stones";
+    cv.setAttribute("aria-hidden", "true");
+    sec.insertBefore(cv, sec.firstChild);
+    var ctx = cv.getContext("2d");
+    var W = 1, H = 1, stars = [], shoot = [], stones = [], nextShoot = 0, vis = false, running = false, last = 0, built = false;
+
+    function build() {
+      var r = cv.getBoundingClientRect();
+      W = cv.width = Math.max(1, Math.round(r.width * dpr));
+      H = cv.height = Math.max(1, Math.round(r.height * dpr));
+      var count = Math.min(90, Math.round((r.width * r.height) / 16000));   // sparse starfield
+      stars = [];
+      for (var i = 0; i < count; i++) {
+        stars.push({ x: Math.random() * W, y: Math.random() * H, r: (0.4 + Math.random() * 1.0) * dpr,
+          a: 0.2 + Math.random() * 0.5, sp: 0.4 + Math.random() * 1.5, ph: Math.random() * 6.283,
+          gold: Math.random() < 0.2 });
+      }
+      stones = [];
+      for (var k = 0; k < 4; k++) {
+        var sz = rnd(64, 138) * dpr, ang = rnd(0, 6.283), sp = rnd(3, 7) * dpr / 1000;
+        stones.push({ x: rnd(0, W), y: rnd(0, H), vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+          r: sz / 2, rot: rnd(0, 6.283), vrot: rnd(-0.00006, 0.00006), img: k % IMGS.length,
+          maxA: rnd(0.16, 0.34), a: 0 });
+      }
+      nextShoot = performance.now() + rnd(800, 2400);
+      built = true;
+    }
+    function frame(now) {
+      if (!vis) { running = false; return; }                                 // stop when off-screen
+      if (!window.__afterPreload) { requestAnimationFrame(frame); return; }   // idle during loading
+      if (!built) build();
+      var dt = Math.min(48, now - last); last = now;
+      ctx.clearRect(0, 0, W, H);
+      // starfield (twinkle)
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i], tw = 0.55 + 0.45 * Math.sin(now * 0.001 * s.sp + s.ph);
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(" + (s.gold ? GOLD : COL) + "," + (s.a * tw).toFixed(3) + ")";
+        ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill();
+      }
+      // shooting stars
+      if (now > nextShoot && shoot.length < 2) {
+        var sa = rnd(2.15, 2.6);
+        shoot.push({ x: rnd(W * 0.15, W * 0.85), y: rnd(0, H * 0.35), vx: Math.cos(sa), vy: Math.sin(sa),
+          sp: rnd(7, 12) * dpr, trail: rnd(90, 200) * dpr, life: 1 });
+        nextShoot = now + rnd(1800, 4600);
+      }
+      for (var j = shoot.length - 1; j >= 0; j--) {
+        var sh = shoot[j], mv = sh.sp * dt * 0.06;
+        sh.x += sh.vx * mv; sh.y += sh.vy * mv; sh.life -= dt * 0.0016;
+        var tx = sh.x - sh.vx * sh.trail, ty = sh.y - sh.vy * sh.trail, al = Math.max(0, Math.min(1, sh.life));
+        var g = ctx.createLinearGradient(sh.x, sh.y, tx, ty);
+        g.addColorStop(0, "rgba(" + COL + "," + (0.7 * al).toFixed(3) + ")");
+        g.addColorStop(1, "rgba(" + COL + ",0)");
+        ctx.strokeStyle = g; ctx.lineWidth = 1.4 * dpr;
+        ctx.beginPath(); ctx.moveTo(sh.x, sh.y); ctx.lineTo(tx, ty); ctx.stroke();
+        if (sh.life <= 0 || sh.y > H + 40 || sh.x < -40 || sh.x > W + 40) shoot.splice(j, 1);
+      }
+      // floating asteroids
+      for (var m = 0; m < stones.length; m++) {
+        var st = stones[m], mr = st.r;
+        st.x += st.vx * dt; st.y += st.vy * dt; st.rot += st.vrot * dt; st.a += (st.maxA - st.a) * 0.02;
+        if (st.x < -mr) st.x = W + mr; else if (st.x > W + mr) st.x = -mr;
+        if (st.y < -mr) st.y = H + mr; else if (st.y > H + mr) st.y = -mr;
+        var img = IMGS[st.img];
+        if (img && img.complete && img.naturalWidth) {
+          ctx.save(); ctx.globalAlpha = st.a; ctx.translate(st.x, st.y); ctx.rotate(st.rot);
+          ctx.drawImage(img, -st.r, -st.r, st.r * 2, st.r * 2); ctx.restore();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    function start() { if (!running) { running = true; last = performance.now(); requestAnimationFrame(frame); } }
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { vis = es[0].isIntersecting; if (vis) start(); }, { threshold: 0 }).observe(sec);
+    } else { vis = true; start(); }
+    window.addEventListener("resize", function () { built = false; }, { passive: true });
+  });
+})();
+</script>
 
 <!-- ===== Tweaks ===== -->
 <div id="tweaks-root"></div>
