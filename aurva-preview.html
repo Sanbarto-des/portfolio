@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aurva · native page mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@300;400;500&family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #08080b;
+    --panel: #111114;
+    --panel2: #151519;
+    --line: rgba(255,255,255,0.10);
+    --ink: #f4f2ee;
+    --mut: rgba(244,242,238,0.55);
+    --mono: "DM Mono", ui-monospace, monospace;
+    --serif: "Cormorant Garamond", Georgia, serif;
+    --sans: "Montserrat", system-ui, sans-serif;
+    --brandface: "Manrope", system-ui, sans-serif;  /* Aurva's documented product typeface, used only in the type specimen */
+    /* Aurva per-project accents, purple-only UI theme */
+    --acc: #A578C0;        /* Aurva Purple, single UI accent, used throughout */
+    --acc-2: #A578C0;      /* alias of --acc (kept so existing rules resolve) */
+    --acc-deep: #2E1B3D;   /* deep purple, section gradients */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+  img { max-width: 100%; display: block; }
+
+  /* mockup ribbon */
+  .ribbon {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: rgba(12,12,14,0.86); backdrop-filter: blur(8px);
+    border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--mut);
+    padding: 9px 16px; text-align: center;
+  }
+  .ribbon b { color: var(--acc); font-weight: 500; }
+
+  /* top bar (portfolio chrome) */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    padding: 18px 0;
+    background: linear-gradient(180deg, rgba(8,8,11,0.96) 60%, rgba(8,8,11,0));
+    backdrop-filter: blur(6px);
+  }
+  .bar-inner {
+    max-width: 1160px; margin: 0 auto;
+    padding: 0 clamp(16px,4vw,48px);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .leftgrp { display: flex; align-items: center; gap: 18px; }
+  .logo { display: inline-flex; color: var(--ink); text-decoration: none; }
+  .logo svg { height: 20px; width: auto; display: block; }
+  .logo svg path { fill: currentColor; }
+  .logo:hover { opacity: 0.75; }
+  .close {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid var(--line); background: rgba(255,255,255,0.04);
+    color: var(--ink); font-size: 22px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; text-decoration: none; flex: none;
+    transition: background .2s, transform .2s;
+  }
+  .close:hover { background: rgba(255,255,255,0.12); transform: rotate(90deg); }
+
+  /* phase sub-nav */
+  .phasenav {
+    position: sticky; top: 80px; z-index: 40;
+    display: flex; gap: clamp(12px,2.6vw,30px); flex-wrap: wrap;
+    padding: 12px clamp(16px,4vw,48px);
+    max-width: 1160px; margin: 0 auto;
+    background: rgba(8,8,11,0.7); backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  }
+  .phasenav a { color: var(--mut); text-decoration: none; transition: color .2s; position: relative; padding-bottom: 3px; }
+  .phasenav a::after { content:""; position:absolute; left:0; bottom:0; width:0; height:1px; background: var(--acc); transition: width .25s; }
+  .phasenav a:hover, .phasenav a.active { color: var(--ink); }
+  .phasenav a:hover::after, .phasenav a.active::after { width: 100%; }
+
+  main { max-width: 1160px; margin: 0 auto; padding: 0 clamp(16px,4vw,48px); }
+
+  /* header */
+  .phead { padding: clamp(30px,6vw,64px) 0 clamp(20px,4vw,36px); }
+  .cat { font-family: var(--mono); font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--acc); margin-bottom: 18px; }
+  h1 { font-family: var(--sans); font-weight: 500; font-size: clamp(30px,5.2vw,60px); line-height: 1.03; letter-spacing: -0.015em; }
+  h1 .g { color: var(--acc); }
+  h1 .p { color: var(--acc-2); }
+  .lede { max-width: 720px; margin-top: 22px; font-weight: 300; font-size: clamp(15px,1.5vw,18px); line-height: 1.7; color: rgba(244,242,238,0.8); }
+  .meta { display: flex; flex-wrap: wrap; gap: 12px 40px; margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .meta .m .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mut); margin-bottom: 6px; }
+  .meta .m .v { font-size: 15px; }
+
+  /* generic image slot, swap for a real export */
+  .slot {
+    position: relative; border: 1px dashed rgba(255,255,255,0.20); border-radius: 14px;
+    background:
+      linear-gradient(rgba(165,120,192,0.05), rgba(165,120,192,0.03)),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 12px, transparent 12px 24px);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    color: var(--mut); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; padding: 18px; min-height: 90px;
+  }
+  .slot span { max-width: 84%; line-height: 1.6; }
+  .slot::after { content: "◇"; position: absolute; top: 10px; right: 12px; color: rgba(165,120,192,0.55); font-size: 12px; }
+  .slot.pur::after { color: rgba(165,120,192,0.6); }
+
+  /* hero cover */
+  .hero { padding: clamp(16px,3vw,34px) 0 clamp(30px,6vw,56px); }
+  .hero img.cover { width: 100%; height: auto; aspect-ratio: 2880/1343; object-fit: cover; object-position: center; display: block; border-radius: 20px; border: 1px solid var(--line); }
+
+  /* phase divider */
+  .phase { padding: clamp(46px,8vw,96px) 0 clamp(20px,3vw,30px); }
+  .phase .idx { font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; color: var(--acc-2); }
+  .phase h2 { font-family: var(--sans); font-weight: 300; font-size: clamp(40px,9vw,110px); line-height: 0.95; letter-spacing: -0.02em; text-transform: lowercase; margin-top: 8px; color: var(--acc); }
+  .phase h2 .dot { color: var(--acc-2); }
+  .phase .rule { height: 1px; background: var(--line); margin-top: clamp(18px,3vw,30px); }
+
+  .block { padding: clamp(18px,3vw,30px) 0; }
+  .block h3 { font-size: clamp(19px,2.4vw,26px); font-weight: 500; letter-spacing: -0.01em; margin-bottom: 16px; }
+  .block h3 .sub { display:block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--acc-2); font-weight: 400; margin-bottom: 8px; }
+  .block p.body { max-width: 780px; font-weight: 300; font-size: clamp(15px,1.4vw,17px); line-height: 1.75; color: rgba(244,242,238,0.82); }
+  .block p.body + p.body { margin-top: 16px; }
+  .block p.body b { font-weight: 500; color: var(--ink); }
+  .block p.body .gk { color: var(--acc); font-weight: 500; }
+  .block p.body .pk { color: var(--acc-2); font-weight: 500; }
+
+  /* two-column figure + copy */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px,4vw,48px); align-items: center; }
+  .split.wide-fig { grid-template-columns: 1.15fr 0.85fr; }
+  .split img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 14px; }
+
+  /* two rectangular images side by side */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px,2.4vw,22px); margin: 4px 0 22px; }
+  .duo .slot { aspect-ratio: 16/9; }
+  .duo img { width: 100%; height: auto; border-radius: 14px; display: block; }
+
+  /* enclosed accent callout box */
+  .greenbox {
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(22px,4vw,44px); align-items: center;
+    border: 1px solid rgba(165,120,192,0.40); border-radius: 18px;
+    padding: clamp(24px,3.4vw,42px);
+    background: linear-gradient(155deg, rgba(165,120,192,0.13), rgba(165,120,192,0.03) 58%, rgba(165,120,192,0.015));
+  }
+  .greenbox.pur {
+    border-color: rgba(165,120,192,0.42);
+    background: linear-gradient(155deg, rgba(165,120,192,0.15), rgba(165,120,192,0.03) 58%, rgba(165,120,192,0.015));
+  }
+  .greenbox h3 { color: var(--ink); }
+  .greenbox .slot { aspect-ratio: 4/3; background: rgba(8,8,10,0.5); border-color: rgba(165,120,192,0.40); }
+  .greenbox.pur .slot { border-color: rgba(165,120,192,0.42); }
+  .greenbox img { width: 100%; height: auto; border-radius: 12px; }
+  /* wider-image variant: give the figure column more room for a landscape photo */
+  .greenbox.wide-img { grid-template-columns: 0.95fr 1.05fr; }
+  .greenbox.wide-img .slot { aspect-ratio: 16/9; }
+  .greenbox.wide-img img { max-width: 92%; margin-left: auto; }
+
+  /* task banner */
+  .task {
+    text-align: center; border: 1px solid rgba(165,120,192,0.35); border-radius: 18px;
+    padding: clamp(28px,5vw,54px) clamp(20px,4vw,48px);
+    background: linear-gradient(160deg, rgba(165,120,192,0.12), rgba(165,120,192,0.05));
+  }
+  .task .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--acc-2); margin-bottom: 14px; }
+  .task p { max-width: 720px; margin: 0 auto; font-size: clamp(17px,2.2vw,24px); font-weight: 500; line-height: 1.5; letter-spacing: -0.01em; }
+  .task p b { color: var(--acc); font-weight: 500; }
+
+  /* core-value cards */
+  .values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 6px; }
+  .value { border: 1px solid var(--line); border-radius: 16px; padding: clamp(18px,2.4vw,24px); background: var(--panel); text-align: center; }
+  .value .ic {
+    width: 54px; height: 54px; margin: 0 auto 14px; border-radius: 50%;
+    display: grid; place-items: center; color: var(--acc-2);
+    border: 1px solid rgba(165,120,192,0.4); background: rgba(165,120,192,0.08);
+  }
+  .value .ic svg { width: 24px; height: 24px; }
+  .value h4 { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+  .value p { font-weight: 300; font-size: 12.5px; line-height: 1.55; color: rgba(244,242,238,0.72); }
+
+  /* personality word cloud */
+  .cloud { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; align-items: center; }
+  .cloud .tag {
+    font-weight: 500; border-radius: 999px; padding: 10px 20px;
+    border: 1px solid rgba(165,120,192,0.35); color: var(--ink);
+    background: rgba(165,120,192,0.07); font-size: 15px;
+  }
+  .cloud .tag.lg { font-size: 22px; font-weight: 500; padding: 13px 26px; }
+  .cloud .tag.md { font-size: 18px; padding: 11px 22px; }
+  .cloud .tag.pur { border-color: rgba(165,120,192,0.4); background: rgba(165,120,192,0.08); }
+
+  /* quote cards (vision) */
+  .quotes { columns: 3; column-gap: 16px; margin-top: 8px; }
+  .quote { break-inside: avoid; border: 1px solid var(--line); border-radius: 16px; padding: 20px; background: var(--panel); margin-bottom: 16px; }
+  .quote .mk { font-family: Georgia, serif; font-size: 34px; line-height: 0; color: var(--acc); display: block; height: 18px; }
+  .quote p { font-weight: 400; font-size: 14.5px; line-height: 1.55; color: rgba(244,242,238,0.9); margin: 6px 0 14px; }
+  .quote .who { display: flex; align-items: center; gap: 10px; }
+  .quote .av { width: 30px; height: 30px; border-radius: 50%; background: rgba(165,120,192,0.18); border: 1px solid rgba(165,120,192,0.4); flex: none; display: grid; place-items: center; font-size: 11px; color: var(--acc-2); font-weight: 700; }
+  .quote .nm { font-size: 13px; font-weight: 500; }
+  .quote .rl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--mut); text-transform: uppercase; }
+
+  /* process steps */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 6px; }
+  .steps.three { grid-template-columns: repeat(3, 1fr); }
+  .step .slot { aspect-ratio: 1/1; margin-bottom: 14px; }
+  .step img { width: 100%; height: auto; border-radius: 12px; margin-bottom: 14px; }
+  .step .sidx { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--acc); }
+  .step .snm { font-size: 16px; font-weight: 500; margin: 6px 0 8px; }
+  .step p { font-weight: 300; font-size: 13px; line-height: 1.55; color: rgba(244,242,238,0.78); }
+
+  /* color scales */
+  .scale { margin-top: 22px; }
+  .scale .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mut); margin-bottom: 10px; }
+  .ramp { display: grid; grid-template-columns: repeat(10, 1fr); border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .ramp .st { aspect-ratio: 1/1.15; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; }
+  .ramp .st b { font-family: var(--mono); font-size: 10px; font-weight: 500; }
+
+  /* typography specimen */
+  .typespec { border: 1px solid rgba(165,120,192,0.22); border-radius: 16px; padding: clamp(22px,3vw,34px); background: linear-gradient(150deg, rgba(165,120,192,0.16), rgba(165,120,192,0.04) 55%, rgba(165,120,192,0.01)), var(--panel); display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(20px,4vw,44px); font-family: var(--brandface); }
+  .typespec .big { font-size: clamp(40px,7vw,78px); font-weight: 800; letter-spacing: -0.03em; color: var(--acc); line-height: 1; }
+  .typespec .glyphs { font-size: 17px; letter-spacing: 0.04em; color: rgba(244,242,238,0.8); margin-top: 16px; line-height: 1.7; word-break: break-word; }
+  .typespec .wname { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--acc-2); margin-bottom: 14px; }
+  .typespec .wrow { font-size: 16px; margin-bottom: 12px; }
+  .typespec .wrow.w300 { font-weight: 300; }
+  .typespec .wrow.w400 { font-weight: 400; }
+  .typespec .wrow.w600 { font-weight: 600; }
+  .typespec .wrow.w800 { font-weight: 800; }
+
+  /* usage / meaning rows */
+  .usage { display: grid; gap: 16px; margin-top: 6px; }
+  .usage.g2 { grid-template-columns: repeat(2, 1fr); }
+  .usage .row { border: 1px solid var(--line); border-radius: 16px; padding: clamp(18px,2.6vw,26px); background: var(--panel); }
+  .usage h5 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--acc); margin-bottom: 6px; }
+  .usage h5 .m { color: var(--mut); }
+  .usage p { font-weight: 300; font-size: 13.5px; line-height: 1.6; color: rgba(244,242,238,0.8); margin-top: 8px; }
+  .usage .slot { aspect-ratio: 16/6; margin-bottom: 14px; }
+
+  /* component feature cards */
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 6px; }
+  .features.g3 { grid-template-columns: repeat(3, 1fr); }
+  .feature { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--panel); }
+  .feature .slot { border: none; border-bottom: 1px dashed rgba(255,255,255,0.14); border-radius: 0; aspect-ratio: 16/9; }
+  .feature img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--line); }
+  .feature .txt { padding: clamp(18px,2.4vw,24px); }
+  .feature h4 { font-size: 18px; font-weight: 500; margin-bottom: 10px; }
+  .feature h4 .c { color: var(--acc); }
+  .feature h4 .c2 { color: var(--acc-2); }
+  .features.g3 .feature h4 .c, .features.g3 .feature h4 .c2 { color: var(--ink); }
+  .feature p { font-weight: 300; font-size: 13px; line-height: 1.6; color: rgba(244,242,238,0.8); }
+
+  /* concept, pearl in shell */
+  .concept { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(22px,4vw,44px); align-items: center; border: 1px solid var(--line); border-radius: 18px; padding: clamp(22px,3vw,34px); background: linear-gradient(160deg, var(--acc-deep), var(--panel) 70%); }
+  .concept .slot { aspect-ratio: 4/3; background: rgba(8,8,10,0.4); }
+  .concept .fig { display: block; width: 100%; height: auto; border: none; border-radius: 12px; }
+  .concept .cname { font-size: clamp(22px,3vw,30px); font-weight: 500; }
+  .concept .cname .c { color: var(--acc); }
+  .concept p { font-weight: 300; line-height: 1.7; color: rgba(244,242,238,0.85); margin: 14px 0 18px; }
+  .annot { display: flex; flex-wrap: wrap; gap: 8px; }
+  .annot span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; border: 1px solid rgba(165,120,192,0.4); border-radius: 999px; padding: 6px 12px; color: rgba(244,242,238,0.85); }
+
+  /* galleries */
+  .galsec { margin-top: 8px; }
+  .galsec .glabel { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mut); margin: 26px 0 12px; }
+  .gal { display: grid; gap: 12px; }
+  .gal.c2 { grid-template-columns: repeat(2, 1fr); }
+  .gal.c3 { grid-template-columns: repeat(3, 1fr); }
+  .gal.c4 { grid-template-columns: repeat(4, 1fr); }
+  .gal.c5 { grid-template-columns: repeat(5, 1fr); }
+  .gal .slot { aspect-ratio: 1/1; }
+  .gal.wide .slot { aspect-ratio: 3/2; }
+  .gal img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 14px; }
+  .gal.bigrow { margin-top: 12px; }
+  .gal.bigrow .slot { aspect-ratio: 16/9; }
+  .gal.tall .slot { aspect-ratio: 4/5; }
+  .gal.banner { margin-top: 12px; }
+  .gal.banner .slot { aspect-ratio: 2/1; }
+
+  /* auto-scrolling blog-cover marquee (smooth moving frames) */
+  .marquee { display: grid; gap: 16px; margin-top: 8px; }
+  .mq-row { overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+  .mq-track { display: flex; width: max-content; will-change: transform; }
+  .mq-row.left  .mq-track { animation: mqL 46s linear infinite; }
+  .mq-row.right .mq-track { animation: mqR 46s linear infinite; }
+  .marquee:hover .mq-track { animation-play-state: paused; }
+  /* frames are 2.6 : 1 (wide) */
+  .mq-frame { flex: none; height: clamp(120px, 17vw, 210px); aspect-ratio: 2.6 / 1; margin-right: 16px; border-radius: 14px; overflow: hidden; }
+  .mq-frame img { width: 100%; height: 100%; object-fit: cover; display: block; border: none; border-radius: 14px; }
+  .mq-frame.slot { min-height: 0; }
+  @keyframes mqL { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes mqR { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .mq-row.left .mq-track, .mq-row.right .mq-track { animation: none; }
+  }
+
+  /* LinkedIn carousel phone mockup */
+  .li-wrap { display: flex; justify-content: center; padding: 6px 0 4px; }
+  /* social section: phone left, 2x2 square posts right */
+  .smg { display: flex; flex-wrap: wrap; gap: clamp(20px,4vw,40px); align-items: flex-start; }
+  .smg .li-wrap { flex: 0 0 auto; padding: 0; }
+  .smg-grid { flex: 1 1 320px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; align-content: start; }
+  .smg-grid .cell, .smg-grid .slot { aspect-ratio: 1 / 1; min-width: 0; overflow: hidden; border-radius: 14px; }
+  .smg-grid .cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* business cards: text overlaid on the top-left corner of the composed image */
+  .bcards { position: relative; }
+  .bcards .base { width: 100%; height: auto; display: block; border-radius: 16px; }
+  .bc-text { position: absolute; top: 7%; left: 4%; width: 42%; }
+  .bc-text h3 { margin-bottom: 12px; font-size: clamp(16px, 2.4vw, 26px); }
+  .bc-text .body { font-size: clamp(10px, 1.35vw, 16px); }
+  @media (max-width: 760px) {
+    .bcards { position: static; }
+    .bc-text { position: static; width: auto; margin-bottom: 14px; }
+    .bc-text h3 { font-size: clamp(19px, 2.4vw, 26px); }
+    .bc-text .body { font-size: 14px; }
+  }
+  .li-phone { width: clamp(250px, 33vw, 300px); background: #0e0e11; border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 42px; padding: 11px; position: relative;
+    box-shadow: 0 34px 80px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(255,255,255,0.05); }
+  .li-screen { position: relative; background: #fff; border-radius: 32px; overflow: hidden; }
+  .li-island { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 78px; height: 20px; background: #000; border-radius: 12px; z-index: 6; }
+  .li-status { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px 5px; }
+  .li-status .t { font-family: var(--sans); font-size: 12px; font-weight: 700; color: #111; }
+  .li-status .r { display: flex; align-items: center; gap: 4px; }
+  .li-status .r .sig { width: 16px; height: 10px; background:
+      linear-gradient(#111,#111) 0 100%/3px 4px no-repeat,
+      linear-gradient(#111,#111) 5px 100%/3px 6px no-repeat,
+      linear-gradient(#111,#111) 10px 100%/3px 8px no-repeat,
+      linear-gradient(#111,#111) 15px 100%/3px 10px no-repeat; }
+  .li-status .r .bat { width: 18px; height: 10px; border: 1px solid #111; border-radius: 2px; position: relative; }
+  .li-status .r .bat::before { content:""; position:absolute; inset: 1.5px; width: 70%; background: #111; border-radius: 1px; }
+  .li-status .r .bat::after { content:""; position:absolute; right:-3px; top:3px; width:2px; height:4px; background:#111; border-radius:0 1px 1px 0; }
+  .li-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px 6px; }
+  .li-av { width: 38px; height: 38px; border-radius: 50%; flex: none; overflow: hidden; background: #000; }
+  .li-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .li-id { flex: 1; min-width: 0; line-height: 1.2; }
+  .li-id .n { font-family: var(--sans); font-size: 13px; font-weight: 700; color: #1a1a1a; }
+  .li-id .s { font-size: 11px; color: #5f5f5f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .li-id .m { font-size: 10.5px; color: #8a8a8a; }
+  .li-menu { color: #666; font-weight: 700; letter-spacing: 1px; align-self: flex-start; }
+  .li-cap { padding: 0 12px 8px; font-family: var(--sans); font-size: 12.5px; color: #1a1a1a; line-height: 1.45; }
+  .li-cap b { color: #0a66c2; font-weight: 600; }
+  .li-carousel { position: relative; width: 100%; aspect-ratio: 2160 / 2700; overflow: hidden; background: #e9e9ea; }
+  .li-track { display: flex; height: 100%; animation: liSwipe 30s cubic-bezier(0.66,0,0.34,1) infinite; }
+  .li-slide { flex: 0 0 100%; height: 100%; }
+  .li-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .li-slide.ph { display: grid; place-items: center; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: #8a7fa0;
+    background: repeating-linear-gradient(45deg, #efeaf5 0 11px, #e6dcf1 11px 22px); }
+  .li-dots { position: relative; height: 6px; width: max-content; margin: 9px auto 3px; display: flex; gap: 6px; }
+  .li-dots i { width: 6px; height: 6px; border-radius: 50%; background: #cdd0d4; }
+  .li-dots .cur { position: absolute; left: 0; top: 0; width: 6px; height: 6px; border-radius: 50%; background: #0a66c2; animation: liDot 30s cubic-bezier(0.66,0,0.34,1) infinite; }
+  .li-stats { display: flex; align-items: center; gap: 5px; padding: 4px 12px 7px; font-family: var(--sans); font-size: 11px; color: #5f5f5f; }
+  .li-stats .rx { color: #0a66c2; }
+  .li-actions { display: flex; border-top: 1px solid #e7e7e7; }
+  .li-actions span { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 9px 0; font-family: var(--sans); font-size: 10.5px; font-weight: 600; color: #5f5f5f; }
+  .li-actions svg { width: 15px; height: 15px; }
+  .li-phone:hover .li-track, .li-phone:hover .li-dots .cur { animation-play-state: paused; }
+  @keyframes liSwipe {
+    0.0000%,5.4545% { transform: translateX(-0%); }
+    9.0909%,14.5455% { transform: translateX(-100%); }
+    18.1818%,23.6364% { transform: translateX(-200%); }
+    27.2727%,32.7273% { transform: translateX(-300%); }
+    36.3636%,41.8182% { transform: translateX(-400%); }
+    45.4545%,50.9091% { transform: translateX(-500%); }
+    54.5455%,60.0000% { transform: translateX(-600%); }
+    63.6364%,69.0909% { transform: translateX(-700%); }
+    72.7273%,78.1818% { transform: translateX(-800%); }
+    81.8182%,87.2727% { transform: translateX(-900%); }
+    90.9091%,100% { transform: translateX(-1000%); }
+  }
+  @keyframes liDot {
+    0.0000%,5.4545% { transform: translateX(0px); }
+    9.0909%,14.5455% { transform: translateX(12px); }
+    18.1818%,23.6364% { transform: translateX(24px); }
+    27.2727%,32.7273% { transform: translateX(36px); }
+    36.3636%,41.8182% { transform: translateX(48px); }
+    45.4545%,50.9091% { transform: translateX(60px); }
+    54.5455%,60.0000% { transform: translateX(72px); }
+    63.6364%,69.0909% { transform: translateX(84px); }
+    72.7273%,78.1818% { transform: translateX(96px); }
+    81.8182%,87.2727% { transform: translateX(108px); }
+    90.9091%,100% { transform: translateX(0px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .li-track, .li-dots .cur { animation: none; }
+  }
+
+  /* learnings + thanks */
+  .learn { border: 1px solid var(--line); border-radius: 18px; padding: clamp(24px,4vw,40px); background: var(--panel); }
+  .learn h3 { font-size: clamp(20px,2.6vw,28px); font-weight: 500; margin-bottom: 14px; }
+  .learn p { font-weight: 300; font-size: 15px; line-height: 1.75; color: rgba(244,242,238,0.82); max-width: 820px; }
+  .thanks { text-align:center; padding: clamp(50px,10vw,120px) 0 clamp(70px,10vw,120px); }
+  .thanks h2 { font-family: var(--sans); font-weight:300; letter-spacing:-0.02em; font-size: clamp(48px,10vw,100px); }
+  .thanks h2 .c { color: var(--acc); }
+  .thanks p { color: var(--mut); font-family: var(--mono); letter-spacing:0.18em; text-transform:uppercase; font-size:12px; margin-top:10px; }
+
+  /* reveal-on-scroll */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(0.16,1,0.3,1), transform .7s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+  @media (max-width: 980px) {
+    .quotes { columns: 2; }
+    .typespec { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 860px) {
+    .split, .split.wide-fig, .concept, .greenbox, .greenbox.wide-img { grid-template-columns: 1fr; }
+    .features, .features.g3 { grid-template-columns: 1fr; }
+    .steps, .steps.three { grid-template-columns: repeat(2, 1fr); }
+    .values { grid-template-columns: repeat(2, 1fr); }
+    .usage.g2 { grid-template-columns: 1fr; }
+    .gal.c5 { grid-template-columns: repeat(3, 1fr); }
+    .gal.c4 { grid-template-columns: repeat(3, 1fr); }
+    .ramp .st b { font-size: 8px; }
+  }
+  @media (max-width: 640px) {
+    .quotes { columns: 1; }
+    .gal.c2.wide { grid-template-columns: 1fr; }
+    .gal.c5, .gal.c4 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .gal.c5, .gal.c4, .gal.c3 { grid-template-columns: repeat(2, 1fr); }
+    .duo { grid-template-columns: 1fr; }
+    .steps, .steps.three { grid-template-columns: 1fr; }
+    .ramp { grid-template-columns: repeat(5, 1fr); }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="bar-inner">
+      <div class="leftgrp">
+        <a class="logo" href="/" aria-label="Sanbarto Mondal, home"><svg viewBox="0 0 257 121" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><path d="M104.604 92.748C110.396 92.7482 115.903 95.2593 119.701 99.6309L138.269 121H0L18.5674 99.6309C22.3659 95.2591 27.8736 92.748 33.665 92.748H104.604ZM161.922 27.2217C165.083 30.8604 166.824 35.5185 166.824 40.3389V121H138.269V76.1855H41.5811C17.0333 76.1855 7.01368 51.786 7.01367 37.3457C7.01367 22.9054 17.0333 0 41.5811 0H138.269L161.922 27.2217ZM207.01 27.2217C210.171 30.8604 211.912 35.5186 211.912 40.3389V121H183.356V0L207.01 27.2217ZM252.097 27.2217C255.258 30.8604 257 35.5185 257 40.3389V121H228.444V0L252.097 27.2217ZM119.586 21.501C115.787 25.8727 110.28 28.3828 104.488 28.3828H41.5791C37.5713 28.3828 35.0664 33.8603 35.0664 38.3418C35.0665 42.8232 37.5714 47.3047 41.5791 47.3047H138.268V0L119.586 21.501Z"></path></svg></a>
+      </div>
+      <a class="close" href="/" aria-label="Back to home">&times;</a>
+    </div>
+  </div>
+
+  <nav class="phasenav">
+    <a href="#context">01 Context</a>
+    <a href="#strategy">02 Strategy</a>
+    <a href="#mascot">03 Mascot</a>
+    <a href="#system">04 System</a>
+    <a href="#applications">05 Applications</a>
+  </nav>
+
+  <main>
+    <header class="phead reveal">
+      <div class="cat">Brand Identity · Visual System</div>
+      <h1>Aurva, a space-themed identity<br>for <span class="g">data</span> <span class="p">security</span></h1>
+      <p class="lede">A cohesive brand identity and visual system for Aurva, a data-security company, a space-themed language built around a custom mascot, a green-and-purple color system, a Manrope stylesheet and a library of graphic elements that balance enterprise credibility with genuine character across every touchpoint.</p>
+      <div class="meta">
+        <div class="m"><div class="k">Role</div><div class="v">Visual Designer</div></div>
+        <div class="m"><div class="k">Domain</div><div class="v">Data Security · B2B</div></div>
+        <div class="m"><div class="k">Scope</div><div class="v">Brand system &amp; assets</div></div>
+        <div class="m"><div class="k">Typeface</div><div class="v">Manrope</div></div>
+      </div>
+    </header>
+
+    <section class="hero reveal">
+      <img class="cover" src="uploads/aurva-cover.png" alt="Aurva, space-themed brand identity cover" fetchpriority="high" decoding="async" />
+    </section>
+
+    <!-- 01 CONTEXT -->
+    <section id="context" class="phase reveal">
+      <div class="idx">01</div>
+      <h2>context<span class="dot">.</span></h2>
+      <div class="rule"></div>
+    </section>
+
+    <div class="block reveal">
+      <div class="greenbox wide-img">
+        <div>
+          <h3>What is Aurva?</h3>
+          <p class="body">Aurva is a <b>data-security company</b> that brings <span class="gk">real-time visibility and control</span> over how data is accessed and used, across humans, services and AI agents. Moving beyond static security models, it helps businesses <b>detect, understand and prevent unauthorized access instantly</b>.</p>
+        </div>
+        <img src="uploads/aurva-founders.png" width="1116" height="629" alt="The Aurva founding team in Aurva-branded tees" loading="lazy" decoding="async" />
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>The need</h3>
+      <p class="body" style="margin-bottom:20px">Aurva's early visual presence reflected a <b>functional, product-first approach</b>. Clean but generic. The interface lacked a distinct identity, making it difficult for the brand to stand out in an increasingly competitive B2B landscape. As the category evolved, leading players like <span class="pk">Cyera, Wiz &amp; Upwind</span> began establishing strong, recognizable visual systems that blended product clarity with a unique brand voice. Aurva lacked this <b>consistency and memorability</b>.</p>
+      <div class="gal">
+        <img src="uploads/aurva-need.png" width="2336" height="946" alt="Aurva's earlier product-first interface, clean but visually generic" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <div class="task">
+        <div class="k">My Task</div>
+        <p>To design and establish a <b>consistent, scalable brand identity</b>, one that not only supports the product but elevates Aurva into a brand people recognize and remember.</p>
+      </div>
+    </div>
+
+    <!-- 02 STRATEGY -->
+    <section id="strategy" class="phase reveal">
+      <div class="idx">02</div>
+      <h2>strategy<span class="dot">.</span></h2>
+      <div class="rule"></div>
+    </section>
+
+    <div class="block reveal">
+      <h3><span class="sub">Brand Strategy</span>Core values</h3>
+      <p class="body" style="margin-bottom:22px">Aurva is built on the principles of <b>clarity, trust and intelligent design</b>, simplifying complex systems into transparent, reliable experiences, while maintaining consistency across every interaction.</p>
+      <div class="values">
+        <div class="value">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></div>
+          <h4>Clarity</h4>
+          <p>Complex systems made transparent and easy to read.</p>
+        </div>
+        <div class="value">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></div>
+          <h4>Trust</h4>
+          <p>Security you can rely on, communicated with confidence.</p>
+        </div>
+        <div class="value">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0-4 10.5V17h8v-3.5A6 6 0 0 0 12 3z"/><path d="M9.5 20h5"/></svg></div>
+          <h4>Intelligence</h4>
+          <p>Active, adaptive systems that understand context.</p>
+        </div>
+        <div class="value">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
+          <h4>Consistency</h4>
+          <p>One coherent language across every surface.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Brand personality</h3>
+      <p class="body" style="margin-bottom:20px">Aurva's personality is defined through a set of carefully chosen attributes, a collective expression of how the brand thinks, behaves and communicates.</p>
+      <div class="gal">
+        <img src="uploads/aurva-wordcloud.png" width="1890" height="1125" alt="Aurva brand personality word cloud: Security, Futuristic, Techy, Sleek, Friendly, Modern, Intelligent, Minimal" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3><span class="sub">Branding Concept</span>Competitor observation</h3>
+      <p class="body" style="margin-bottom:20px">An analysis of competitor brands revealed a strong emphasis on <b>distinct visual identities and cohesive systems</b>. This highlighted the need for Aurva to move beyond functional design and establish a more recognizable, differentiated presence, e.g. a mascot, eye-catching branding visuals and a repeatable system.</p>
+      <div class="gal">
+        <img src="uploads/aurva-competitor.png" width="1890" height="744" alt="Competitor observation: mascot explorations and branding analysis of Postman, Dig, Wiz, Cyera and Varonis" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Defining the vision</h3>
+      <p class="body" style="margin-bottom:20px">Early conversations with the team pointed to a single, resonant direction: a <span class="pk">space-inspired universe</span>, spacecraft and planets for nodes and connections, a subtle character for approachability, and a sense of scale and system.</p>
+      <div class="gal">
+        <img src="uploads/aurva-vision.png" width="1880" height="916" alt="Defining the vision: founder and team quotes steering Aurva toward a space-inspired brand universe" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <!-- 03 MASCOT -->
+    <section id="mascot" class="phase reveal">
+      <div class="idx">03</div>
+      <h2>mascot<span class="dot">.</span></h2>
+      <div class="rule"></div>
+    </section>
+
+    <div class="block reveal">
+      <h3><span class="sub">Concept</span>Protected Intelligence</h3>
+      <div class="concept">
+        <img class="fig" src="uploads/aurva-mascot-concept.png" width="1044" height="784" alt="Protected Intelligence mascot concept: a valuable pearl protected within a shell, with reference sketches" loading="lazy" decoding="async" />
+        <div>
+          <div class="cname">Protected <span class="c">Intelligence</span></div>
+          <p>The mascot is built around the idea of a <b>valuable pearl protected within a shell</b>, a direct reflection of Aurva's core philosophy. The pearl represents sensitive and valuable data: intelligent, essential and worth protecting. The surrounding shell symbolizes Aurva's role as a secure, protective layer.</p>
+          <div class="annot">
+            <span>Pearl = Valuable Data</span><span>Shell = Protection</span><span>Approachable</span><span>Intelligent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>From sketch to system</h3>
+      <div class="steps">
+        <div class="step"><img src="uploads/aurva-m1.png" width="632" height="632" alt="Mascot step 1: ideation sketches" loading="lazy" decoding="async" /><div class="sidx">Step 1</div><div class="snm">Ideation</div><p>Rough hand-drawn exploration of form, pose and the pearl-in-shell idea.</p></div>
+        <div class="step"><img src="uploads/aurva-m2.png" width="632" height="632" alt="Mascot step 2: digitizing into vector line art" loading="lazy" decoding="async" /><div class="sidx">Step 2</div><div class="snm">Digitizing</div><p>Refining the selected direction into clean, precise vector line work.</p></div>
+        <div class="step"><img src="uploads/aurva-m3.png" width="632" height="632" alt="Mascot step 3: applying the brand color palette" loading="lazy" decoding="async" /><div class="sidx">Step 3</div><div class="snm">Color</div><p>Applying the brand palette, green shell, expressive detailing.</p></div>
+        <div class="step"><img src="uploads/aurva-m4.png" width="632" height="632" alt="Mascot step 4: final polished illustration" loading="lazy" decoding="async" /><div class="sidx">Step 4</div><div class="snm">Final</div><p>A polished, motion-ready mascot ready to flex into poses.</p></div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Final illustrations</h3>
+      <p class="body" style="margin-bottom:20px">A full library of expressive poses lets the mascot carry meaning across the product and marketing, welcoming, searching, on-call, analyzing, confident and more.</p>
+      <div class="gal c4">
+        <img src="uploads/aurva-ma1.png" width="632" height="632" alt="Aurva mascot pose 1" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma2.png" width="632" height="632" alt="Aurva mascot pose 2" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma3.png" width="632" height="632" alt="Aurva mascot pose 3" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma4.png" width="632" height="632" alt="Aurva mascot pose 4" loading="lazy" decoding="async" style="border:none" />
+        <img src="uploads/aurva-ma5.png" width="632" height="632" alt="Aurva mascot pose 5" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma6.png" width="632" height="632" alt="Aurva mascot pose 6" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma7.png" width="632" height="632" alt="Aurva mascot pose 7" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma8.png" width="632" height="632" alt="Aurva mascot pose 8" loading="lazy" decoding="async" style="border:none" />
+        <img src="uploads/aurva-ma9.png" width="632" height="632" alt="Aurva mascot pose 9" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma10.png" width="632" height="632" alt="Aurva mascot pose 10" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma11.png" width="632" height="632" alt="Aurva mascot pose 11" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma12.png" width="632" height="632" alt="Aurva mascot pose 12" loading="lazy" decoding="async" style="border:none" />
+        <img src="uploads/aurva-ma13.png" width="632" height="632" alt="Aurva mascot pose 13" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma14.png" width="632" height="632" alt="Aurva mascot pose 14" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma15.png" width="632" height="632" alt="Aurva mascot pose 15" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-ma16.png" width="632" height="632" alt="Aurva mascot pose 16" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <!-- 04 SYSTEM -->
+    <section id="system" class="phase reveal">
+      <div class="idx">04</div>
+      <h2>system<span class="dot">.</span></h2>
+      <div class="rule"></div>
+    </section>
+
+    <div class="block reveal">
+      <h3><span class="sub">Stylesheet</span>The logo</h3>
+      <p class="body" style="margin-bottom:20px">Aurva already had its logo and primary visual direction established before the project began. My responsibility was to <b>refine and standardize the brand system</b>, defining clear guidelines for spacing, sizing, alignment and color combinations to ensure consistency across all visual touchpoints.</p>
+      <div class="gal">
+        <img src="uploads/aurva-logo.png" width="1880" height="916" alt="Aurva logo system: construction grid, spacing and color-on-background combinations" loading="lazy" decoding="async" style="border:none" />
+      </div>
+      <div class="gal" style="margin-top:12px">
+        <img src="uploads/aurva-logo-mockups.png" width="1880" height="446" alt="Aurva logo shown in real-world mockups" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Color system</h3>
+      <p class="body">The palette reflects Aurva's identity as a modern, enterprise-focused data-security company. The primary <b>green</b> represents trust, security and active system intelligence; the secondary <b>purple</b> introduces depth, innovation and a futuristic, technological feel. A balanced neutral grey scale keeps clarity, hierarchy and professionalism across interfaces.</p>
+      <div class="scale">
+        <div class="lbl">Green · brand palette</div>
+        <div class="ramp">
+          <div class="st" style="background:#EDF7E9"><b style="color:#2C5C1D">50</b></div>
+          <div class="st" style="background:#D6EFCB"><b style="color:#2C5C1D">100</b></div>
+          <div class="st" style="background:#B4E29E"><b style="color:#2C5C1D">200</b></div>
+          <div class="st" style="background:#92D571"><b style="color:#1B3A12">300</b></div>
+          <div class="st" style="background:#74C94C"><b style="color:#1B3A12">400</b></div>
+          <div class="st" style="background:#5FBF3F"><b style="color:#0d1f08">500</b></div>
+          <div class="st" style="background:#4EA033"><b style="color:#eafce2">600</b></div>
+          <div class="st" style="background:#3D7E28"><b style="color:#eafce2">700</b></div>
+          <div class="st" style="background:#2C5C1D"><b style="color:#eafce2">800</b></div>
+          <div class="st" style="background:#1B3A12"><b style="color:#eafce2">900</b></div>
+        </div>
+      </div>
+      <div class="scale">
+        <div class="lbl">Purple · primary (UI accent)</div>
+        <div class="ramp">
+          <div class="st" style="background:#F4EEFA"><b style="color:#5E3A6C">50</b></div>
+          <div class="st" style="background:#E4D6EF"><b style="color:#5E3A6C">100</b></div>
+          <div class="st" style="background:#CFB4E0"><b style="color:#482C53">200</b></div>
+          <div class="st" style="background:#B892CF"><b style="color:#35213D">300</b></div>
+          <div class="st" style="background:#A578C0"><b style="color:#35213D">400</b></div>
+          <div class="st" style="background:#8E52A6"><b style="color:#F4EEFA">500</b></div>
+          <div class="st" style="background:#7C4691"><b style="color:#F4EEFA">600</b></div>
+          <div class="st" style="background:#5E3A6C"><b style="color:#F4EEFA">700</b></div>
+          <div class="st" style="background:#482C53"><b style="color:#F4EEFA">800</b></div>
+          <div class="st" style="background:#35213D"><b style="color:#F4EEFA">900</b></div>
+        </div>
+      </div>
+      <div class="scale">
+        <div class="lbl">Grey · neutral</div>
+        <div class="ramp">
+          <div class="st" style="background:#F5F6F7"><b style="color:#3B3E43">50</b></div>
+          <div class="st" style="background:#E4E6E8"><b style="color:#3B3E43">100</b></div>
+          <div class="st" style="background:#C9CCD0"><b style="color:#26282B">200</b></div>
+          <div class="st" style="background:#A9ADB3"><b style="color:#131415">300</b></div>
+          <div class="st" style="background:#878C93"><b style="color:#131415">400</b></div>
+          <div class="st" style="background:#6A6F76"><b style="color:#f5f6f7">500</b></div>
+          <div class="st" style="background:#51555B"><b style="color:#f5f6f7">600</b></div>
+          <div class="st" style="background:#3B3E43"><b style="color:#f5f6f7">700</b></div>
+          <div class="st" style="background:#26282B"><b style="color:#f5f6f7">800</b></div>
+          <div class="st" style="background:#131415"><b style="color:#f5f6f7">900</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Typography</h3>
+      <p class="body" style="margin-bottom:22px"><b>Manrope</b> was chosen for its clean, modern and highly readable design language. Its geometric structure and balanced character spacing complement Aurva's enterprise-focused identity while keeping a contemporary, technology-driven feel, a professional visual tone that stays approachable across digital interfaces and branding materials.</p>
+      <div class="typespec">
+        <div>
+          <div class="big">Manrope</div>
+          <div class="glyphs">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 !@#$%^&amp;*()</div>
+        </div>
+        <div>
+          <div class="wname">Weights</div>
+          <div class="wrow w300">The quick brown fox jumps over the lazy dog</div>
+          <div class="wrow w400">The quick brown fox jumps over the lazy dog</div>
+          <div class="wrow w600">The quick brown fox jumps over the lazy dog</div>
+          <div class="wrow w800">The quick brown fox jumps over the lazy dog</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3><span class="sub">Visual Elements</span>A space-themed metaphor system</h3>
+      <p class="body" style="margin-bottom:22px">Because the brand world is set in <span class="pk">outer space</span>, each recurring element maps to a concept in data infrastructure, turning an abstract security story into an intuitive, memorable visual language.</p>
+      <div class="features">
+        <div class="feature">
+          <img src="uploads/aurva-ve-jewels.png" width="1048" height="588" alt="Space Jewels visual element, crystal facets representing valuable data" loading="lazy" decoding="async" />
+          <div class="txt"><h4>Space Jewels</h4><p>Valuable data assets, the things worth protecting. Rendered in green and purple crystal facets.</p></div>
+        </div>
+        <div class="feature">
+          <img src="uploads/aurva-ve-asteroids.png" width="1048" height="588" alt="Asteroid Stones visual element, representing risks and threats" loading="lazy" decoding="async" />
+          <div class="txt"><h4>Asteroid Stones</h4><p>Risks and potential threats, risky identities and hazards drifting through the system.</p></div>
+        </div>
+        <div class="feature">
+          <img src="uploads/aurva-ve-planets.png" width="1048" height="588" alt="Planets visual element, representing databases" loading="lazy" decoding="async" />
+          <div class="txt"><h4>Planets</h4><p>Databases, large, orbiting bodies that hold and organize information at scale.</p></div>
+        </div>
+        <div class="feature">
+          <img src="uploads/aurva-ve-spaceships.png" width="1048" height="588" alt="Spaceships visual element, representing accessors and moving entities" loading="lazy" decoding="async" />
+          <div class="txt"><h4>Spaceships</h4><p>Accessors and moving entities, the humans, services and agents traversing the system.</p></div>
+        </div>
+        <div class="feature">
+          <img src="uploads/aurva-ve-spaceland.png" width="1048" height="588" alt="Space Land illustration, the spacescape environment of the system" loading="lazy" decoding="async" />
+          <div class="txt"><h4>Space Land</h4><p>An illustrated spacescape that sets the scene, the environment the whole system lives in.</p></div>
+        </div>
+        <div class="feature">
+          <img src="uploads/aurva-ve-aiagent.png" width="1048" height="588" alt="AI sidekick character suggesting an AI agent" loading="lazy" decoding="async" />
+          <div class="txt"><h4>AI Sidekick</h4><p>A side-kick character that suggests an AI agent, an approachable companion working alongside the user.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 APPLICATIONS -->
+    <section id="applications" class="phase reveal">
+      <div class="idx">05</div>
+      <h2>applications<span class="dot">.</span></h2>
+      <div class="rule"></div>
+    </section>
+
+    <div class="block reveal">
+      <h3><span class="sub">Content</span>Blog cover illustrations</h3>
+      <p class="body" style="margin-bottom:20px">The system at work across editorial content, a rotating set of on-brand blog covers built from the same space vocabulary. Each cover reuses the mascot, jewels, planets and ships, instantly recognizable and quick to assemble for any new article.</p>
+      <div class="marquee">
+        <div class="mq-row left">
+          <div class="mq-track">
+            <div class="mq-frame"><img src="uploads/aurva-blog-1.png" width="2796" height="1060" alt="Aurva blog cover 1" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-2.png" width="2796" height="1060" alt="Aurva blog cover 2" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-3.png" width="2796" height="1060" alt="Aurva blog cover 3" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-4.png" width="2796" height="1060" alt="Aurva blog cover 4" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-5.png" width="2796" height="1060" alt="Aurva blog cover 5" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-6.png" width="2796" height="1060" alt="Aurva blog cover 6" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-7.png" width="2796" height="1060" alt="Aurva blog cover 7" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-8.png" width="2796" height="1060" alt="Aurva blog cover 8" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-9.png" width="2796" height="1060" alt="Aurva blog cover 9" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-1.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-2.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-3.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-4.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-5.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-6.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-7.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-8.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-9.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+          </div>
+        </div>
+        <div class="mq-row right">
+          <div class="mq-track">
+            <div class="mq-frame"><img src="uploads/aurva-blog-10.png" width="2796" height="1060" alt="Aurva blog cover 10" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-11.png" width="2796" height="1060" alt="Aurva blog cover 11" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-12.png" width="2796" height="1060" alt="Aurva blog cover 12" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-13.png" width="2796" height="1060" alt="Aurva blog cover 13" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-14.png" width="2796" height="1060" alt="Aurva blog cover 14" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-15.png" width="2796" height="1060" alt="Aurva blog cover 15" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-16.png" width="2796" height="1060" alt="Aurva blog cover 16" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-17.png" width="2796" height="1060" alt="Aurva blog cover 17" loading="eager" decoding="async" /></div>
+            <div class="mq-frame"><img src="uploads/aurva-blog-18.png" width="2796" height="1060" alt="Aurva blog cover 18" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-10.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-11.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-12.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-13.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-14.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-15.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-16.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-17.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+            <div class="mq-frame" aria-hidden="true"><img src="uploads/aurva-blog-18.png" width="2796" height="1060" alt="" loading="eager" decoding="async" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Infographics &amp; presentations</h3>
+      <div class="gal">
+        <img src="uploads/aurva-infographics.png" width="1880" height="1740" alt="Aurva infographics explaining the identity-chain and runtime-context story" loading="lazy" decoding="async" style="border:none" />
+      </div>
+      <div class="gal c2 wide" style="margin-top:12px">
+        <img src="uploads/aurva-deck1.png" width="1048" height="700" alt="Aurva pitch deck on desktop" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-deck2.png" width="1048" height="700" alt="Aurva pitch deck slides" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Social media graphics</h3>
+      <div class="smg">
+      <div class="li-wrap">
+        <div class="li-phone">
+          <div class="li-screen">
+            <div class="li-island"></div>
+            <div class="li-status"><span class="t">9:41</span><span class="r"><span class="sig"></span><span class="bat"></span></span></div>
+            <div class="li-post">
+              <div class="li-head">
+                <div class="li-av"><img src="uploads/aurva-avatar.png" width="320" height="320" alt="Aurva logo" loading="eager" decoding="async" /></div>
+                <div class="li-id"><div class="n">Aurva</div><div class="s">Data Security Platform · 12,458 followers</div><div class="m">2d · Promoted</div></div>
+                <div class="li-menu">···</div>
+              </div>
+              <div class="li-cap">Identity is the new perimeter. Swipe to see why runtime context beats static rules → <b>#DataSecurity</b></div>
+              <div class="li-carousel">
+                <div class="li-track">
+                  <div class="li-slide"><img src="uploads/aurva-carousel-1.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 1" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-2.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 2" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-3.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 3" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-4.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 4" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-5.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 5" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-6.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 6" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-7.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 7" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-8.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 8" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-9.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 9" loading="eager" decoding="async" /></div>
+                  <div class="li-slide"><img src="uploads/aurva-carousel-10.png" width="2160" height="2700" alt="Aurva LinkedIn carousel slide 10" loading="eager" decoding="async" /></div>
+                  <div class="li-slide" aria-hidden="true"><img src="uploads/aurva-carousel-1.png" width="2160" height="2700" alt="" loading="eager" decoding="async" /></div>
+                </div>
+              </div>
+              <div class="li-dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><span class="cur"></span></div>
+              <div class="li-stats"><span class="rx">👍 ❤️ 342</span><span>· 28 comments</span></div>
+              <div class="li-actions">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M7 11l4.5-8a1.8 1.8 0 0 1 3 1.7L13.5 9H19a2 2 0 0 1 2 2.3l-1.1 6.2A2 2 0 0 1 17.9 20H7"/></svg>Like</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12z"/></svg>Comment</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repost</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>Send</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="smg-grid">
+          <div class="cell"><img src="uploads/aurva-post-1.png" alt="Aurva social post 1" loading="lazy" decoding="async" /></div>
+          <div class="cell"><img src="uploads/aurva-post-2.png" alt="Aurva social post 2" loading="lazy" decoding="async" /></div>
+          <div class="cell"><img src="uploads/aurva-post-3.png" alt="Aurva social post 3" loading="lazy" decoding="async" /></div>
+          <div class="cell"><img src="uploads/aurva-post-4.png" alt="Aurva social post 4" loading="lazy" decoding="async" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Merchandise, &ldquo;DAM IT&rdquo;</h3>
+      <p class="body" style="margin-bottom:20px">A playful merch line built on the mascot and a bold typographic joke, tees, prints and giveaways that make the brand wearable.</p>
+      <div class="gal" style="margin-top:0">
+        <img src="uploads/aurva-merch.png" width="2320" height="2196" alt="Aurva DAM IT merchandise line" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <div class="gal" style="margin-top:0">
+        <img src="uploads/aurva-cards.png" width="4339" height="2844" alt="Aurva business card designs and desk mockups" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Stickers &amp; comic pamphlets</h3>
+      <p class="body" style="margin-bottom:20px">During the AISS event in December 2025, a series of themed stickers were designed around the concept of <b>&ldquo;DAM IT.&rdquo;</b> These stickers were created with a bold and playful visual approach aimed at attracting and engaging the Gen Z audience at the company booth. The designs helped add a youthful and energetic touch to the event presence while maintaining alignment with the brand's identity.</p>
+      <div class="gal" style="margin-top:0">
+        <img src="uploads/aurva-stickers.png" width="2880" height="1800" alt="Aurva DAM IT stickers from the AISS 2025 booth" loading="lazy" decoding="async" style="border:none" />
+      </div>
+      <div class="galsec">
+        <div class="glabel">Comic pamphlets</div>
+        <div class="gal c2 wide">
+          <img src="uploads/aurva-comic-1.png" width="1052" height="700" alt="Aurva comic pamphlet 1" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-comic-2.png" width="1052" height="700" alt="Aurva comic pamphlet 2" loading="lazy" decoding="async" style="border:none" />
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3><span class="sub">Product</span>UI implementations, empty states</h3>
+      <p class="body" style="margin-bottom:20px">The illustration set slots directly into the product to give friendly, on-brand feedback at key moments, turning dead-ends into moments of personality.</p>
+      <div class="features g3">
+        <div class="feature"><img src="uploads/aurva-es-nodata.png" width="1302" height="730" alt="No Data State illustration" loading="lazy" decoding="async" /><div class="txt"><h4>No Data <span class="c">State</span></h4><p>A parked UFO, nothing to show here yet.</p></div></div>
+        <div class="feature"><img src="uploads/aurva-es-error.png" width="1302" height="730" alt="Error Screen illustration" loading="lazy" decoding="async" /><div class="txt"><h4>Error <span class="c2">Screen</span></h4><p>A crashed ship signals something went wrong.</p></div></div>
+        <div class="feature"><img src="uploads/aurva-es-launching.png" width="1302" height="730" alt="Launching State illustration" loading="lazy" decoding="async" /><div class="txt"><h4>Launching <span class="c">State</span></h4><p>A rocket lifting off, work in progress.</p></div></div>
+        <div class="feature"><img src="uploads/aurva-es-partial.png" width="1302" height="730" alt="Partial Data illustration" loading="lazy" decoding="async" /><div class="txt"><h4>Partial <span class="c2">Data</span></h4><p>Assembly mid-build, some data available.</p></div></div>
+        <div class="feature"><img src="uploads/aurva-es-redirect.png" width="1302" height="730" alt="Redirection illustration" loading="lazy" decoding="async" /><div class="txt"><h4><span class="c">Redirection</span></h4><p>A ship arcing away, taking you elsewhere.</p></div></div>
+        <div class="feature"><img src="uploads/aurva-es-featureoff.png" width="1302" height="730" alt="Feature is Off illustration" loading="lazy" decoding="async" /><div class="txt"><h4>Feature <span class="c2">Off</span></h4><p>A powered-down panel, toggle to enable.</p></div></div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h3>Website graphics</h3>
+      <div class="gal bigrow" style="margin-top:0">
+        <img src="uploads/aurva-web-1.png" width="2128" height="1176" alt="Aurva marketing site hero and sections" loading="lazy" decoding="async" style="border:none" />
+      </div>
+      <div class="gal c2 wide" style="margin-top:12px">
+        <img src="uploads/aurva-web-2.png" width="1052" height="700" alt="Aurva website on laptop" loading="lazy" decoding="async" style="border:none" /><img src="uploads/aurva-web-3.png" width="1052" height="700" alt="Aurva website on tablet" loading="lazy" decoding="async" style="border:none" />
+      </div>
+    </div>
+
+    <!-- CLOSING -->
+    <div class="block reveal" style="padding-top:48px">
+      <div class="learn">
+        <h3>Key learnings &amp; takeaways</h3>
+        <p>Working on Aurva gave me valuable experience developing core branding concepts supported by meaningful visual assets. It taught me how to translate an abstract, enterprise data-security story into a warm, memorable universe, and how to execute a unified brand language across a wide range of deliverables while holding consistency, clarity and visual impact throughout.</p>
+      </div>
+    </div>
+
+    <div class="thanks reveal">
+      <h2>Thank <span class="c">You</span></h2>
+      <p>For your time, have a good day</p>
+    </div>
+  </main>
+
+  <div class="ribbon">Mockup · layout &amp; look preview: <b>most panels are placeholder slots</b>, real crisp assets get dropped in from Figma</div>
+
+<script>
+  // phase-nav scrollspy
+  (function () {
+    const links = Array.from(document.querySelectorAll(".phasenav a"));
+    const map = links.map(a => ({ a, sec: document.querySelector(a.getAttribute("href")) })).filter(x => x.sec);
+    const spy = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const id = "#" + e.target.id;
+          links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === id));
+        }
+      });
+    }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
+    map.forEach(x => spy.observe(x.sec));
+  })();
+
+  // subtle reveal-on-scroll
+  (function () {
+    const els = document.querySelectorAll(".reveal");
+    if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      els.forEach(el => el.classList.add("in")); return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+    els.forEach(el => io.observe(el));
+  })();
+
+  // match the 2x2 social grid height to the phone mockup (a 2x2 of squares is itself square,
+  // so setting its width to the phone's height makes its height equal the phone)
+  (function () {
+    const smg = document.querySelector(".smg");
+    if (!smg) return;
+    const phone = smg.querySelector(".li-phone");
+    const grid = smg.querySelector(".smg-grid");
+    if (!phone || !grid) return;
+    function sync() {
+      // reset to natural first
+      phone.style.width = ""; grid.style.flex = ""; grid.style.maxWidth = "";
+      const cw = smg.clientWidth;
+      const gap = parseFloat(getComputedStyle(smg).columnGap) || 32;
+      // stacked layout on narrow screens: leave everything natural
+      if (cw < 640) return;
+      // scale the phone (and thus the square grid) so phoneW + gap + gridW == contentW.
+      // gridW == phoneH (a 2x2 of squares is square), and phoneH is affine in phoneW, so iterate.
+      const target = cw - gap;            // desired phoneW + phoneH
+      let pw = Math.min(target * 0.34, 460);
+      for (let i = 0; i < 5; i++) {
+        phone.style.width = pw + "px";
+        const err = target - (pw + phone.offsetHeight);
+        pw = Math.max(250, Math.min(pw + err * 0.6, 480));
+      }
+      phone.style.width = pw + "px";
+      const ph = phone.offsetHeight;
+      grid.style.flex = "0 0 " + ph + "px";
+      grid.style.maxWidth = ph + "px";
+    }
+    window.addEventListener("load", sync);
+    window.addEventListener("resize", () => requestAnimationFrame(sync));
+    if (document.readyState !== "loading") sync();
+    setTimeout(sync, 300);   // re-check after fonts settle
+  })();
+</script>
+</body>
+</html>
