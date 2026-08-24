@@ -1129,6 +1129,110 @@
     background: linear-gradient(180deg, rgba(8, 8, 8, 0) 60%, rgba(8, 8, 8, 0.4));
   }
 
+  /* ===== WORK — upcoming project teaser banner (static, not clickable) ===== */
+  .ws-teaser {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: clamp(24px, 4vw, 56px);
+    align-items: center;
+    padding: clamp(22px, 3vw, 36px);
+    margin-bottom: clamp(36px, 6vh, 64px);
+    border: 1px solid rgba(200, 184, 154, 0.55);
+    border-radius: 10px;
+    background:
+      radial-gradient(130% 160% at 100% 0%, rgba(200, 184, 154, 0.14), transparent 58%),
+      radial-gradient(90% 120% at 0% 100%, rgba(200, 184, 154, 0.06), transparent 60%),
+      var(--surface);
+    box-shadow:
+      0 0 0 1px rgba(200, 184, 154, 0.08),
+      0 0 46px -14px rgba(200, 184, 154, 0.55),
+      inset 0 1px 0 rgba(240, 237, 232, 0.06);
+    cursor: default;
+    animation: wsTeaserGlow 5s ease-in-out infinite;
+  }
+  @keyframes wsTeaserGlow {
+    0%, 100% {
+      box-shadow:
+        0 0 0 1px rgba(200, 184, 154, 0.08),
+        0 0 46px -14px rgba(200, 184, 154, 0.5),
+        inset 0 1px 0 rgba(240, 237, 232, 0.06);
+    }
+    50% {
+      box-shadow:
+        0 0 0 1px rgba(200, 184, 154, 0.16),
+        0 0 60px -12px rgba(200, 184, 154, 0.75),
+        inset 0 1px 0 rgba(240, 237, 232, 0.06);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ws-teaser { animation: none; }
+  }
+  .ws-teaser-visual {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(200, 184, 154, 0.3);
+    background: var(--bg);
+  }
+  .ws-teaser-visual::after {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(200, 184, 154, 0.1) 0%, transparent 30%, transparent 70%, rgba(8, 8, 8, 0.35) 100%);
+  }
+  .ws-teaser-visual image-slot { width: 100%; height: 100%; display: block; filter: saturate(0.95); opacity: 0.94; }
+  .ws-teaser-badge {
+    position: absolute;
+    top: 14px; left: 14px;
+    z-index: 3;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #000;
+    box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.8);
+  }
+  .ws-teaser-meta { min-width: 0; }
+  .ws-teaser-tag {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .ws-teaser-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(22px, 2.2vw, 34px);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--fg);
+  }
+  .ws-teaser-desc {
+    margin-top: 12px;
+    max-width: 46ch;
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(13px, 1vw, 15.5px);
+    line-height: 1.6;
+    color: rgba(240, 237, 232, 0.72);
+    text-wrap: pretty;
+  }
+  .ws-teaser-tags { margin-top: 16px; }
+  .ws-teaser-tags span { color: var(--gold); border-color: rgba(200, 184, 154, 0.35); }
+  @media (max-width: 860px) {
+    .ws-teaser { grid-template-columns: 1fr; }
+  }
+
   /* ===== MORE WORK — small cards ===== */
   .ws-more { margin-top: clamp(60px, 11vh, 130px); }
   .ws-more .section-label { display: flex; align-items: center; gap: 14px; margin-bottom: clamp(26px, 4vh, 40px); }
@@ -1928,6 +2032,19 @@
   <section class="work-stack-sec" id="work" data-screen-label="Work">
     <div class="ws-head">
       <div class="section-label reveal"><span class="label">Projects</span></div>
+    </div>
+
+    <div class="ws-teaser reveal" role="note" aria-label="Upcoming project, not yet published">
+      <div class="ws-teaser-visual">
+        <image-slot id="workTeaser" shape="rect" src="uploads/aurva-web6.png" placeholder="Drop thumbnail — Aurva Website 6.0"></image-slot>
+        <span class="ws-teaser-badge">Coming Soon</span>
+      </div>
+      <div class="ws-teaser-meta">
+        <span class="ws-teaser-tag">Up next</span>
+        <span class="ws-teaser-title">Aurva Website 6.0</span>
+        <p class="ws-teaser-desc">A ground-up redesign of Aurva's website, with sharper storytelling, a refined visual system, and a faster, more confident experience for the brand's next chapter.</p>
+        <div class="ws-tags ws-teaser-tags"><span>Web Design</span><span>UI Case Study</span><span>Branding</span></div>
+      </div>
     </div>
 
     <div class="ws-stack" id="wsStack">
