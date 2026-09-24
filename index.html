@@ -1953,8 +1953,8 @@
         var t0 = performance.now();
         function warp(now) {
           if (!cv.isConnected) return;                 // stop once the preloader is removed
-          var accel = Math.min(1, (now - t0) / 1500);  // gentle ramp into hyperspace
-          var sp = (6 + accel * 30) * dpr;
+          var accel = Math.min(1, (now - t0) / 2800);  // slower takeoff, then build into hyperspace
+          var sp = (2.5 + accel * 33.5) * dpr;
           var f = 240 * dpr;
           g.fillStyle = "rgba(13,13,13,0.5)";          // shorter trails → thin, subtle streaks
           g.fillRect(0, 0, W, H);

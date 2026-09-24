@@ -65,6 +65,11 @@
     padding: 22px var(--gutter);
     transition: background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease, padding 0.4s ease;
     border-bottom: 1px solid transparent;
+    animation: aboutNavIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes aboutNavIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: none; }
   }
   nav.scrolled {
     background: rgba(13, 13, 13, 0.55);
@@ -318,13 +323,18 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--muted);
+    animation: aboutFooterIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+  }
+  @keyframes aboutFooterIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
   }
 
   /* ===== REVEAL ===== */
   .reveal {
     opacity: 0;
-    transform: translateY(26px);
-    filter: blur(7px);
+    transform: translateY(18px);
+    filter: blur(4px);
     clip-path: inset(0 0 110% 0);
     transition:
       opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--rd, 0s),
